@@ -1,0 +1,90 @@
+- name: estimated tax for year (credits included in net tax, max at zero)
+  period: 2025
+  input:
+    estimated_taxable_income: [100000, 10000, 200000]
+    tax_offsets: [5000, 0, 2000]
+    estimated_tax_credits: [2000, 5000, 1000]
+  output:
+    estimated_net_tax_payable: [18000, -2500, 47000]
+    estimated_tax: [18000, 0, 47000]
+
+- name: year-to-date fraction by quarter
+  period: 2025-09
+  input:
+    current_quarter: [1, 2, 3, 4]
+  output:
+    fraction_year_to_date: [0.25, 0.5, 0.75, 1.0]
+
+- name: year-to-date instalment adjustment
+  period: 2025-09
+  input:
+    instalments_year_to_date: [1000, 200, 0]
+    instalment_variation_credits_year_to_date: [200, 500, 0]
+  output:
+    instalment_adjustment_year_to_date: [800, -300, 0]
+
+- name: varied amount payable for the quarter (Q2, includes negative case)
+  period: 2025-12
+  input:
+    # Year-level inputs used via period.this_year inside the formula
+    estimated_taxable_income:
+      2025: [100000, 20000]
+    tax_offsets:
+      2025: [0, 0]
+    estimated_tax_credits:
+      2025: [0, 15000]
+    # Quarter and YTD adjustment
+    current_quarter: [2, 2]
+    instalments_year_to_date: [3000, 1000]
+    instalment_variation_credits_year_to_date: [0, 0]
+  output:
+    estimated_tax:
+      2025: [25000, 0]
+    fraction_year_to_date: [0.5, 0.5]
+    instalment_adjustment_year_to_date: [3000, 1000]
+    varied_amount_payable: [9500, -1000]
+
+- name: new varied rate (%) with zero-denominator guard
+  period: 2025-09
+  input:
+    # Construct clean 25% rate for row 1
+    estimated_taxable_income:
+      2025: [100, 100]
+    tax_offsets:
+      2025: [0, 0]
+    estimated_tax_credits:
+      2025: [0, 0]
+    # Annual PAYG income: Row 1 = 100; Row 2 = 0 to force denominator 0
+    estimated_payg_instalment_income:
+      2025: [100, 0]
+  output:
+    estimated_tax:
+      2025: [25, 25]
+    new_varied_rate: [25, 0]
+
+- name: annual net tax negative clamps estimated tax for year to zero
+  period: 2025
+  input:
+    estimated_taxable_income: 10000
+    tax_offsets: 5000
+    estimated_tax_credits: 0
+  output:
+    estimated_net_tax_payable: -2500
+    estimated_tax: 0
+
+- name: new varied rate equals zero when estimated tax is zero and income positive
+  period: 2025-09
+  input:
+    estimated_taxable_income:
+      2025: 0
+    tax_offsets:
+      2025: 0
+    estimated_tax_credits:
+      2025: 0
+    # Numerator is zero; denominator positive
+    estimated_payg_instalment_income:
+      2025: 1000
+  output:
+    estimated_tax:
+      2025: 0
+    new_varied_rate: 0

@@ -1,0 +1,26 @@
+{
+    "tax_entities": {
+      "estimated_tax": {
+        "estimated_taxable_income": { "2025": 100000 },
+        "tax_offsets": { "2025": 5000 },
+        "estimated_tax_credits": { "2025": 2000 },
+        "estimated_tax": { "2025": null }
+      },
+      "varied_amount_payable": {
+        "estimated_taxable_income": { "2025": 100000 },
+        "tax_offsets": { "2025": 5000 },
+        "estimated_tax_credits": { "2025": 2000 },
+        "current_quarter": { "2025-12": 2 },
+        "instalments_year_to_date": { "2025-12": 3000 },
+        "instalment_variation_credits_year_to_date": { "2025-12": 0 },
+        "varied_amount_payable": { "2025-12": null }
+      },
+      "new_varied_rate": {
+        "estimated_taxable_income": { "2025": 100000 },
+        "tax_offsets": { "2025": 5000 },
+        "estimated_tax_credits": { "2025": 2000 },
+        "estimated_payg_instalment_income": { "2025": 100000 },
+        "new_varied_rate": { "2025-09": null }
+      }
+    }
+  }

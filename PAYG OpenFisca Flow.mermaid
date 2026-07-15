@@ -1,0 +1,80 @@
+---
+config:
+  theme: default
+  flowchart:
+    curve: basis
+    htmlLabels: true
+---
+
+flowchart LR
+  %% Styling for sections
+  classDef income fill:#E3F2FD,stroke:#1565C0,stroke-width:2px;
+  classDef esttax fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px;
+  classDef decision fill:#E1BEE7,stroke:#6A1B9A,stroke-width:2px;
+  classDef ytd fill:#F1F8E9,stroke:#2E7D32,stroke-width:2px;
+  classDef adj fill:#FFEBEE,stroke:#C62828,stroke-width:2px;
+  classDef result fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px;
+
+  %% Estimated PAYG instalment income (annual input)
+  subgraph payg_instalment_income
+    PII["Estimated PAYG Instalment Income<br/>(annual estimate)"]:::income
+  end
+
+  %% Estimated annual net tax
+  subgraph estimated_net_tax_payable
+    ETI["Estimated Taxable Income<br/>(annual)"]:::esttax
+    NRO["Tax Offsets<br/>(annual)"]:::esttax
+    CTR["Corporate Tax Rate"]:::esttax
+    ETC["Estimated Tax Credits<br/>(annual)"]:::esttax
+    ENT["Net Tax Payable<br/>= (income × rate) - offsets - credits"]:::esttax
+    ETI --> ENT
+    NRO --> ENT
+    CTR --> ENT
+    ETC --> ENT
+  end
+
+  %% Estimated tax for year
+  subgraph estimated_tax
+    ET["Estimated Tax<br/>= max(annual net tax, 0)"]:::esttax
+    ENT --> ET
+  end
+
+  %% Year-to-date fraction
+  subgraph fraction_year_to_date
+    CQ["Current Quarter<br/>(1..4)"]:::ytd
+    FYTD["YTD Fraction<br/>= quarter ÷ 4.0"]:::ytd
+    CQ --> FYTD
+  end
+
+  %% YTD instalment adjustment
+  subgraph instalment_adjustment_year_to_date
+    IYTD["Instalments YTD"]:::adj
+    IVCYTD["Instalment Variation Credits YTD"]:::adj
+    IAYTD["Instalment Adjustment YTD<br/>= instalments - variation credits"]:::adj
+    IYTD --> IAYTD
+    IVCYTD --> IAYTD
+  end
+
+  %% Varied amount payable
+  subgraph varied_amount_payable
+    VAP["Varied Amount Payable<br/>= (estimated tax × YTD fraction)<br/>- instalment adjustment YTD"]:::result
+    ET --> VAP
+    FYTD --> VAP
+    IAYTD --> VAP
+  end
+
+  %% New varied rate
+  subgraph new_varied_rate
+    NVR["New Varied Rate<br/>= if income = 0 then 0<br/>else (estimated tax / estimated PAYG income) × 100"]:::result
+    PII --> NVR
+    ET --> NVR
+  end
+
+  %% Classes
+  class PII income;
+  class ETI,NRO,CTR,ENT,ETC,ET_POS,ET_ZERO esttax;
+  class ET_DEC,NVR_DEC decision;
+  class CQ,FYTD ytd;
+  class IYTD,IVCYTD,IAYTD adj;
+  class VAP,NVR result;
+

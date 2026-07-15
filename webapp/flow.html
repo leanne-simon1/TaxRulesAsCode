@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decision-flow diagrams</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="muted no-print"><a href="maintain.html">&larr; Maintenance tools</a></p>
+    <h1>Decision-flow diagrams</h1>
+    <p class="lede">
+      A picture of how the engine reaches a result &mdash; every rule, input and policy value it
+      depends on. The diagram is <strong>generated from the engine's own trace</strong>, not drawn by
+      hand, so it can never fall out of step with the rules. Pick a result to see its flow.
+    </p>
+
+    <div class="card">
+      <div class="field">
+        <label for="scenario">Result to diagram</label>
+        <select id="scenario"></select>
+      </div>
+      <p class="help" id="scenario-note"></p>
+    </div>
+
+    <div id="error-box"></div>
+
+    <div class="card" id="legend" hidden>
+      <span class="pill input">input</span> a value you provide &nbsp;
+      <span class="pill formula">rule</span> a formula &nbsp;
+      <span class="pill" style="border-color:var(--warn);color:var(--warn)">result</span> the answer &nbsp;
+      <span class="pill">policy value</span> a dated parameter
+    </div>
+
+    <div class="card table-scroll" id="diagram"><p class="loading">Loading…</p></div>
+
+    <details class="card" id="source-wrap" hidden>
+      <summary>Mermaid source (copy into any Mermaid renderer)</summary>
+      <pre class="table-scroll"><code id="source"></code></pre>
+    </details>
+
+    <p class="muted no-print">
+      Diagrams render with the Mermaid library, loaded on demand. If it can't load (e.g. offline),
+      the generated Mermaid source is shown above instead &mdash; paste it into
+      <a href="https://mermaid.live" target="_blank" rel="noopener">mermaid.live</a>.
+    </p>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Diagrams are generated live from the engine and reflect the rules as
+    encoded. Outputs are guidance to explore Rules as Code, not tax advice.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script src="assets/flow.js"></script>
+</body>
+</html>

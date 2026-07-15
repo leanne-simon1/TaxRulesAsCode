@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ruleset &amp; parameters editor</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="muted no-print"><a href="maintain.html">&larr; Maintenance tools</a></p>
+    <h1>Ruleset &amp; parameters editor</h1>
+    <p class="lede">
+      Two halves of the &ldquo;markdown contract&rdquo; approach. Above: every rule in plain
+      language &mdash; the statements a tax specialist owns, read live from the engine. Below: the
+      dated policy values behind those rules. Change a value and this page writes the exact
+      <strong>YAML edit</strong> for you, ready to hand to the repository maintainer, with a link
+      to the current file on this server &mdash; no Python, and the ruleset's CI tests still gate
+      the change before it can affect an answer.
+    </p>
+
+    <div id="error-box"></div>
+
+    <h2>The rules, in plain language</h2>
+    <p class="muted">
+      One entry per rule (calculated variable). This is the wording the code mirrors; the value it
+      uses is shown as a link to the matching policy parameter below.
+    </p>
+    <div class="field" style="max-width:26rem">
+      <label for="rule-filter">Filter rules</label>
+      <input type="search" id="rule-filter" placeholder="e.g. deadline, objection, tax rate">
+    </div>
+    <div id="rules"><p class="loading">Loading rules…</p></div>
+
+    <h2>Policy values you can change <span class="pill">dated YAML parameters</span></h2>
+    <p class="muted">
+      These are the legislated numbers (time limits, thresholds, rates). To reflect a law change,
+      add a new value with the date it takes effect &mdash; the old value stays as history. To fix a
+      mistake, edit an existing value in place.
+    </p>
+    <div id="parameters"><p class="loading">Loading parameters…</p></div>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. The generated YAML is a suggested change for review, not an applied edit;
+    nothing here writes to the engine. Outputs are guidance to explore Rules as Code, not tax advice.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script src="assets/ruleset-editor.js"></script>
+</body>
+</html>

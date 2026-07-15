@@ -1,0 +1,403 @@
+{
+  "info": {
+    "name": "OpenFisca PAYG Instalments POC",
+    "description": "OpenFisca PAYG Instalment variation calculation ruleset tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "api_url",
+      "value": "https://c16-rac.salsadev.au/calculate",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1) estimated tax for year (credits, max at zero)",
+      "item": [
+        {
+          "name": "1.1 estimated tax for year — scenario 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 100000 },\n      \"tax_offsets\": { \"2025\": 5000 },\n      \"estimated_tax_credits\": { \"2025\": 2000 },\n      \"estimated_net_tax_payable\": { \"2025\": null },\n      \"estimated_tax\": { \"2025\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "1.2 estimated tax for year — scenario 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 10000 },\n      \"tax_offsets\": { \"2025\": 0 },\n      \"estimated_tax_credits\": { \"2025\": 5000 },\n      \"estimated_net_tax_payable\": { \"2025\": null },\n      \"estimated_tax\": { \"2025\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "1.3 estimated tax for year — scenario 3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 200000 },\n      \"tax_offsets\": { \"2025\": 2000 },\n      \"estimated_tax_credits\": { \"2025\": 1000 },\n      \"estimated_net_tax_payable\": { \"2025\": null },\n      \"estimated_tax\": { \"2025\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2) year-to-date fraction by quarter",
+      "item": [
+        {
+          "name": "2.1 YTD fraction — Q1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"current_quarter\": { \"2025-09\": 1 },\n      \"fraction_year_to_date\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "2.2 YTD fraction — Q2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"current_quarter\": { \"2025-09\": 2 },\n      \"fraction_year_to_date\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "2.3 YTD fraction — Q3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"current_quarter\": { \"2025-09\": 3 },\n      \"fraction_year_to_date\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "2.4 YTD fraction — Q4",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"current_quarter\": { \"2025-09\": 4 },\n      \"fraction_year_to_date\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3) year-to-date instalment adjustment",
+      "item": [
+        {
+          "name": "3.1 YTD instalment adjustment — scenario 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"instalments_year_to_date\": { \"2025-09\": 1000 },\n      \"instalment_variation_credits_year_to_date\": { \"2025-09\": 200 },\n      \"instalment_adjustment_year_to_date\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "3.2 YTD instalment adjustment — scenario 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"instalments_year_to_date\": { \"2025-09\": 200 },\n      \"instalment_variation_credits_year_to_date\": { \"2025-09\": 500 },\n      \"instalment_adjustment_year_to_date\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "3.3 YTD instalment adjustment — scenario 3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"instalments_year_to_date\": { \"2025-09\": 0 },\n      \"instalment_variation_credits_year_to_date\": { \"2025-09\": 0 },\n      \"instalment_adjustment_year_to_date\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4) varied amount payable for the quarter (Q2)",
+      "item": [
+        {
+          "name": "4.1 varied amount payable — scenario 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 100000 },\n      \"tax_offsets\": { \"2025\": 0 },\n      \"estimated_tax_credits\": { \"2025\": 0 },\n      \"current_quarter\": { \"2025-12\": 2 },\n      \"instalments_year_to_date\": { \"2025-12\": 3000 },\n      \"instalment_variation_credits_year_to_date\": { \"2025-12\": 0 },\n      \"varied_amount_payable\": { \"2025-12\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "4.2 varied amount payable — scenario 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 20000 },\n      \"tax_offsets\": { \"2025\": 0 },\n      \"estimated_tax_credits\": { \"2025\": 15000 },\n      \"current_quarter\": { \"2025-12\": 2 },\n      \"instalments_year_to_date\": { \"2025-12\": 1000 },\n      \"instalment_variation_credits_year_to_date\": { \"2025-12\": 0 },\n      \"varied_amount_payable\": { \"2025-12\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5) new varied rate (%) with zero-denominator guard",
+      "item": [
+        {
+          "name": "5.1 new varied rate — scenario 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 100 },\n      \"tax_offsets\": { \"2025\": 0 },\n      \"estimated_tax_credits\": { \"2025\": 0 },\n      \"estimated_payg_instalment_income\": { \"2025\": 100 },\n      \"new_varied_rate\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        },
+        {
+          "name": "5.2 new varied rate — zero-denominator",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 100 },\n      \"tax_offsets\": { \"2025\": 0 },\n      \"estimated_tax_credits\": { \"2025\": 0 },\n      \"estimated_payg_instalment_income\": { \"2025\": 0 },\n      \"new_varied_rate\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6) annual net tax negative clamps estimated tax to zero",
+      "item": [
+        {
+          "name": "6 annual net tax negative clamps to zero",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 10000 },\n      \"tax_offsets\": { \"2025\": 5000 },\n      \"estimated_tax_credits\": { \"2025\": 0 },\n      \"estimated_net_tax_payable\": { \"2025\": null },\n      \"estimated_tax\": { \"2025\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7) new varied rate equals zero when estimated tax is zero and income positive",
+      "item": [
+        {
+          "name": "7 new varied rate equals zero when tax is zero",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tax_entities\": {\n    \"tax_entity\": {\n      \"estimated_taxable_income\": { \"2025\": 0 },\n      \"tax_offsets\": { \"2025\": 0 },\n      \"estimated_tax_credits\": { \"2025\": 0 },\n      \"estimated_tax\": { \"2025\": null },\n      \"new_varied_rate\": { \"2025-09\": null }\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{api_url}}"
+          }
+        }
+      ]
+    }
+  ]
+}

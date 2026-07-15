@@ -1,0 +1,40 @@
+# CGT transitional (grandfathered) cases where the gain straddles 1 July 2027
+# (ruleset rule 1.6.4). Individual, $100k cost base, $300k proceeds, 45% marginal,
+# inflation 0 so the split arithmetic is exact. The pre-reform share gets the 50%
+# discount; the post-reform share gets no discount and the 30% minimum-tax floor.
+
+- name: time apportionment - 2-year hold straddling the reform at its midpoint
+  period: 2028
+  absolute_error_margin: 10
+  input:
+    cgt_entity_kind: individual
+    cgt_acquisition_date: 2026-07-01
+    cgt_disposal_date: 2028-07-01
+    cgt_cost_base: 100000
+    cgt_capital_proceeds: 300000
+    cgt_marginal_rate: 0.45
+    cgt_assumed_annual_inflation: 0
+    cgt_transition_method: time_apportionment
+  output:
+    cgt_actual_regime: transitional
+    cgt_transition_pre_fraction: 0.4993   # 365 of 731 days before 1 July 2027
+    cgt_current_rules_tax: 45000
+    cgt_amended_rules_tax: 90000
+    cgt_actual_tax: 67531                  # ~half discounted, ~half at full rate
+
+- name: market-value method - MV at reform fixes the pre/post split at 75/25
+  period: 2030
+  input:
+    cgt_entity_kind: individual
+    cgt_acquisition_date: 2020-01-01
+    cgt_disposal_date: 2030-01-01
+    cgt_cost_base: 100000
+    cgt_capital_proceeds: 300000
+    cgt_marginal_rate: 0.45
+    cgt_assumed_annual_inflation: 0
+    cgt_transition_method: market_value
+    cgt_market_value_at_reform: 250000
+  output:
+    cgt_actual_regime: transitional
+    cgt_transition_pre_fraction: 0.75     # (250000 - 100000) / 200000
+    cgt_actual_tax: 56250                 # 75000*0.5*0.45 + 50000*0.45

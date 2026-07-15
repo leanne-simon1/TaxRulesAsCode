@@ -1,0 +1,68 @@
+---
+title: Extension of time (s 14ZX) ruleset - variable flow (the discretion itself is never computed)
+---
+flowchart TD
+    subgraph objections [From the Objection Rights ruleset]
+        HOR[has_objection_right]
+        DL[objection_deadline]
+        IT[objection_in_time]
+        EXT[can_request_extension]
+        LD[objection_lodgment_date]
+    end
+
+    subgraph inputs [New inputs - human findings]
+        RW[eot_request_in_writing]
+        RF[eot_request_states_circumstances_fully]
+        F1[eot_explanation_covers_whole_period]
+        F2[eot_objection_arguable]
+        F3[eot_concrete_prejudice_to_commissioner]
+        F4[eot_ato_conduct_contributed]
+        F5[eot_taxpayer_rested_on_rights]
+        PO[eot_proposed_outcome]
+    end
+
+    subgraph params [Policy parameters - dated YAML, specialist-maintained]
+        PS[eot.short_delay_max_days = 60]
+        PL[eot.long_delay_min_days = 365]
+    end
+
+    LD --> DAYS[eot_days_late]
+    DL --> DAYS
+    IT --> DAYS
+
+    DAYS --> BAND[eot_delay_band]
+    PS --> BAND
+    PL --> BAND
+
+    EXT --> ENG{eot_discretion_engaged}
+    RW --> ENG
+
+    ENG --> ART[eot_art_review_available_if_refused]
+
+    ENG --> PSI[eot_prompt_seek_further_information]
+    RF --> PSI
+
+    PO --> FJ[eot_flag_discretion_not_engaged]
+    ENG --> FJ
+
+    PO --> FR[eot_flag_atypical_refusal]
+    ENG --> FR
+    BAND --> FR
+    F1 --> FR
+    F2 --> FR
+    F3 --> FR
+    F5 --> FR
+
+    PO --> FG[eot_flag_atypical_grant]
+    ENG --> FG
+    BAND --> FG
+    F1 --> FG
+    F4 --> FG
+    F5 --> FG
+
+    FJ --> HUMAN([The s 14ZX decision itself - Level 4: human judgement, outside the engine])
+    FR --> HUMAN
+    FG --> HUMAN
+    PSI --> HUMAN
+
+    style HUMAN stroke-dasharray: 5 5

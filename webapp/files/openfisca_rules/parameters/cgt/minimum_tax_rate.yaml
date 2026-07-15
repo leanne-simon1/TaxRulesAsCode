@@ -1,0 +1,7 @@
+description: Minimum rate of tax on net capital gains accruing from 1 July 2027 (Division 119 ITAA 1997, inserted by the Treasury Laws Amendment (Tax Reform No. 1) Act 2026). Applies to individuals, trusts and partnerships; a taxpayer already taxed at 30%+ on the gain pays no extra. Modelled as an effective rate floor on the post-reform taxable gain (the full 7-step s 119-10 top-up and the income-support exemption are simplifications documented in the ruleset).
+metadata:
+  unit: /1
+  reference: https://www.legislation.gov.au/C2026A00049/asmade/text
+values:
+  2027-07-01:
+    value: 0.30

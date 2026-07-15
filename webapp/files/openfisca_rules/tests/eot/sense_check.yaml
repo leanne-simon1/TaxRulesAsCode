@@ -1,0 +1,127 @@
+# EOT ruleset rules 1.5.1-1.5.4 - sense-check flags on a PROPOSED human outcome.
+# A flag never decides anything: it marks a proposal as jurisdictionally
+# unavailable or atypical against the decided-case patterns so the decision
+# maker can check their articulation. Mixed profiles never flag (rule 1.5.4).
+
+- name: all-favourable profile - proposed refusal is flagged, proposed grant is not
+  period: 2025
+  input:
+    ato_decision_type: [penalty_assessment, penalty_assessment]
+    decision_notice_date: [2025-01-01, 2025-01-01]
+    objection_lodgment_date: [2025-03-23, 2025-03-23]
+    eot_request_in_writing: [true, true]
+    eot_request_states_circumstances_fully: [true, true]
+    eot_explanation_covers_whole_period: [true, true]
+    eot_objection_arguable: [true, true]
+    eot_concrete_prejudice_to_commissioner: [false, false]
+    eot_ato_conduct_contributed: [false, false]
+    eot_taxpayer_rested_on_rights: [false, false]
+    eot_proposed_outcome: [refuse, agree]
+  output:
+    eot_discretion_engaged: [true, true]
+    eot_delay_band: [short, short]
+    eot_flag_atypical_refusal: [true, false]
+    eot_flag_atypical_grant: [false, false]
+
+- name: multi-year resting on rights - proposed grant is flagged, proposed refusal is not
+  period: 2025
+  input:
+    ato_decision_type: [penalty_assessment, penalty_assessment]
+    decision_notice_date: [2022-01-01, 2022-01-01]
+    objection_lodgment_date: [2025-06-30, 2025-06-30]
+    eot_request_in_writing: [true, true]
+    eot_request_states_circumstances_fully: [true, true]
+    eot_explanation_covers_whole_period: [false, false]
+    eot_objection_arguable: [true, true]
+    eot_concrete_prejudice_to_commissioner: [false, false]
+    eot_ato_conduct_contributed: [false, false]
+    eot_taxpayer_rested_on_rights: [true, true]
+    eot_proposed_outcome: [agree, refuse]
+  output:
+    eot_discretion_engaged: [true, true]
+    eot_delay_band: [long, long]
+    eot_flag_atypical_grant: [true, false]
+    eot_flag_atypical_refusal: [false, false]
+
+- name: Primary Health Care pattern - years late but explanation accounts for the
+    whole period and taxpayer did not rest on rights, proposed grant NOT flagged
+    (FCT v Primary Health Care Ltd [2017] FCAFC 131 - see research/eot/case-table.md)
+  period: 2025
+  input:
+    ato_decision_type: income_tax_assessment
+    taxpayer_kind: other
+    decision_notice_date: 2018-01-10
+    objection_lodgment_date: 2025-06-30
+    eot_request_in_writing: true
+    eot_request_states_circumstances_fully: true
+    eot_explanation_covers_whole_period: true
+    eot_objection_arguable: true
+    eot_concrete_prejudice_to_commissioner: false
+    eot_ato_conduct_contributed: false
+    eot_taxpayer_rested_on_rights: false
+    eot_proposed_outcome: agree
+  output:
+    eot_delay_band: long
+    eot_discretion_engaged: true
+    eot_flag_atypical_grant: false
+    eot_flag_atypical_refusal: false
+
+- name: long delay but ATO conduct contributed - proposed grant NOT flagged
+  period: 2025
+  input:
+    ato_decision_type: penalty_assessment
+    decision_notice_date: 2022-01-01
+    objection_lodgment_date: 2025-06-30
+    eot_request_in_writing: true
+    eot_request_states_circumstances_fully: true
+    eot_explanation_covers_whole_period: false
+    eot_objection_arguable: true
+    eot_concrete_prejudice_to_commissioner: false
+    eot_ato_conduct_contributed: true
+    eot_taxpayer_rested_on_rights: true
+    eot_proposed_outcome: agree
+  output:
+    eot_delay_band: long
+    eot_flag_atypical_grant: false
+
+- name: mixed profile (short delay but explanation gap) - no flag either way
+  period: 2025
+  input:
+    ato_decision_type: [penalty_assessment, penalty_assessment]
+    decision_notice_date: [2025-01-01, 2025-01-01]
+    objection_lodgment_date: [2025-03-23, 2025-03-23]
+    eot_request_in_writing: [true, true]
+    eot_request_states_circumstances_fully: [true, true]
+    eot_explanation_covers_whole_period: [false, false]
+    eot_objection_arguable: [true, true]
+    eot_concrete_prejudice_to_commissioner: [false, false]
+    eot_ato_conduct_contributed: [false, false]
+    eot_taxpayer_rested_on_rights: [false, false]
+    eot_proposed_outcome: [refuse, agree]
+  output:
+    eot_delay_band: [short, short]
+    eot_flag_atypical_refusal: [false, false]
+    eot_flag_atypical_grant: [false, false]
+
+- name: income tax assessment two years late after 2-year window - long band, refusal unflagged
+  period: 2025
+  input:
+    ato_decision_type: income_tax_assessment
+    taxpayer_kind: individual
+    decision_notice_date: 2021-06-01
+    objection_lodgment_date: 2025-06-10
+    eot_request_in_writing: true
+    eot_request_states_circumstances_fully: true
+    eot_explanation_covers_whole_period: false
+    eot_objection_arguable: true
+    eot_concrete_prejudice_to_commissioner: true
+    eot_ato_conduct_contributed: false
+    eot_taxpayer_rested_on_rights: true
+    eot_proposed_outcome: refuse
+  output:
+    objection_deadline: 2023-06-01
+    eot_days_late: 740
+    eot_delay_band: long
+    eot_discretion_engaged: true
+    eot_flag_atypical_refusal: false
+    eot_flag_atypical_grant: false

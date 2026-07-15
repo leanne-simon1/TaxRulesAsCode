@@ -1,0 +1,177 @@
+---
+ahoyapi: v2
+
+entrypoint:
+  - bash
+  - "-c"
+  - "-e"
+  - |
+    [ -f .env ] && [ -s .env ] && export $(grep -v '^#' .env | xargs) && if [ -f .env.local ] && [ -s .env.local ]; then export $(grep -v '^#' .env.local | xargs); fi
+    bash -e -c "$0" "$@"
+  - "{{cmd}}"
+  - "{{name}}"
+
+commands:
+  up:
+    usage: Build project.
+    cmd: |
+      docker compose up -d "$@"
+      ahoy info;
+
+  down:
+    usage: Delete project (CAUTION).
+    cmd: |
+      if [ "$1" == "y" ]; then
+        docker compose down --volumes
+      else
+        ahoy confirm "Running this command will destroy your current site, database and build? Are you sure you didn't mean ahoy stop?" &&
+        # Run this if confirm returns true
+        docker compose down --volumes ||
+        # Run this if confirm returns false
+        echo "OK, probably a wise choice..."
+      fi
+
+  build:
+    usage: Build project.
+    cmd: |
+      docker compose up -d --build --force-recreate
+      ahoy run "pip install -e openfisca-rules[dev]"
+      ahoy info;
+
+  cli:
+    usage: Start a shell inside cli container.
+    cmd: docker compose exec fisca-py sh
+
+  run:
+    usage: Run command inside cli container.
+    cmd: docker compose exec -it fisca-py sh -c "$*"
+
+  logs:
+    usage: Show Docker logs.
+    cmd: docker compose logs "$@"
+
+  ps:
+    usage: List running Docker containers.
+    cmd: docker compose ps
+
+  restart:
+    usage: Restart Docker containers.
+    cmd: docker compose restart
+
+  stop:
+    usage: Stop Docker containers.
+    cmd: docker compose stop "$@"
+
+  lint:
+    usage: Lint code
+    cmd: echo "@todo"
+
+  test:
+    usage: Run OpenFisca Python tests.
+    cmd: ahoy run "openfisca test --country-package openfisca_rules openfisca-rules/openfisca_rules/tests"
+
+  info:
+    usage: Print information about this project.
+    cmd: |
+      echo "Project                  : " $(ahoy run "echo \$LAGOON_PROJECT")
+      echo "Site local URL           : " $(ahoy run "echo \$LAGOON_LOCALDEV_URL")
+
+  confirm:
+    cmd: read -r -p "${@} [y/N] " response; [ ${response} = "y" ]
+    hide: true
+
+  init:
+    usage: Initialise the codebase on first-time setup (ahoy init project-name)
+    cmd: |
+      read -p 'Project name: ' project_name
+      # Check if the user has entered a project name
+      if [[ -z "$project_name" ]]; then
+        echo "ERR: Missing project name."
+        exit 1
+      fi;
+
+      cp .env.default .env
+      sed -i.bak "s/{{ PROJECT_NAME }}/$project_name/" .env && rm .env.bak
+      sed -i.bak "s/{{ PROJECT_NAME }}/$project_name/g" docker-compose.yml && rm docker-compose.yml.bak
+      sed -i.bak "s/{{ PROJECT_NAME }}/$project_name/" .lagoon.yml && rm .lagoon.yml.bak
+      localdev_url="http://$project_name.docker.amazee.io"
+      sed -i '' '13,17d' README.md # Remove lines 13-17 which is the ahoy init command reference
+      sed -i.bak "s|{{ LOCALDEV_URL }}|$localdev_url|" README.md && rm README.md.bak
+
+      printf "\n✅ Done deal. Ready for ahoy build.\n"
+
+  my:
+    usage: Custom commands for this project. See `ahoy my help`.
+    imports:
+      - "custom/ahoy.yml"
+
+  remove-default-rules:
+    usage: Remove default OpenFisca rules
+    cmd: |
+      rm -rf openfisca_rules/parameters/*
+      rm -rf openfisca_rules/reforms/*
+      rm -rf openfisca_rules/situation_examples/*
+      rm -rf openfisca_rules/tests/*
+      find openfisca_rules/variables -type f ! -name '__init__.py' -delete
+
+      git add openfisca_rules
+      git commit -m 'Remove default OpenFisca rules'
+      echo "✅ Removed default OpenFisca rules"
+
+  add-default-rules:
+    usage: Add default OpenFisca rule files for project
+    cmd: |
+      read -p 'Rule name: ' rule_name
+      # Check if the user has entered a rule name
+      if [[ -z "$rule_name" ]]; then
+        echo "ERR: Missing rule name."
+        exit 1
+      fi;
+
+      cat > openfisca_rules/parameters/$rule_name.yaml << EOF
+      description: $rule_name
+      values:
+        2024-01-01:
+          value: 0
+      EOF
+
+      cat > openfisca_rules/variables/$rule_name.py << EOF
+      """This file defines variables for the modelled legislation.
+
+      A variable is a property of an Entity such as a Person, a Household…
+
+      See https://openfisca.org/doc/key-concepts/variables.html
+      """
+
+      from openfisca_core.periods import DAY
+      from openfisca_core.variables import Variable
+
+      # Import the Entities specifically defined for this tax and benefit system
+      from openfisca_rules.entities import Person
+
+
+      class ${rule_name}_input(Variable):
+          entity = Person
+          value_type = bool
+          definition_period = DAY
+
+
+      class ${rule_name}_output(Variable):
+          entity = Person
+          value_type = bool
+          definition_period = DAY
+
+          def formula(person, period):
+              return (person('${rule_name}_input', period))
+      EOF
+
+      cat > openfisca_rules/tests/$rule_name.yaml << EOF
+      - name: $rule_name test
+        period: 2024-01-01
+        input:
+          ${rule_name}_input: true
+        output:
+          ${rule_name}_output: true
+      EOF
+
+      echo "✅ Added default OpenFisca rules files for $rule_name"

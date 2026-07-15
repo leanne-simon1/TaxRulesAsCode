@@ -1,0 +1,32 @@
+# Decision inventory row 2 — amended income tax assessments (ss 14ZV, 14ZW TAA 1953):
+# objection period ends at the LATER of the original assessment's 2yr/4yr window and
+# 60 days after the amended notice. The objection is limited to the alterations (s 14ZV)
+# — a documentation-level constraint, not computed.
+
+- name: 60-day limb ends later than the original 2-year window (individual)
+  period: 2025
+  input:
+    ato_decision_type: income_tax_amended_assessment
+    taxpayer_kind: individual
+    original_assessment_notice_date: 2023-11-10   # + 2 years = 2025-11-10
+    decision_notice_date: 2025-10-01              # + 60 days = 2025-11-30
+    objection_lodgment_date: 2025-11-30
+  output:
+    has_objection_right: true
+    objection_deadline: 2025-11-30
+    objection_in_time: true
+    recommended_pathway: lodge_objection
+
+- name: original 4-year window ends later than the 60-day limb (other entity)
+  period: 2025
+  input:
+    ato_decision_type: income_tax_amended_assessment
+    taxpayer_kind: other
+    original_assessment_notice_date: 2023-11-10   # + 4 years = 2027-11-10
+    decision_notice_date: 2024-01-15              # + 60 days = 2024-03-15
+    objection_lodgment_date: 2027-11-11
+  output:
+    objection_deadline: 2027-11-10
+    objection_in_time: false
+    can_request_extension: true
+    recommended_pathway: objection_with_extension_request

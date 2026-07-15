@@ -1,0 +1,7 @@
+description: CGT discount percentage for companies (s 115-100 ITAA 1997) - companies get no CGT discount. Unchanged by the 2026 reform (companies are unaffected, except the pre-CGT market-value reset which is out of scope for this PoC).
+metadata:
+  unit: /1
+  reference: https://www.legislation.gov.au/C2004A05138/latest/text#s115-100
+values:
+  1999-09-21:
+    value: 0.0

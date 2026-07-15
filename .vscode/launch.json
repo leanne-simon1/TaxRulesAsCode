@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: OpenFisca Run & Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "openfisca_core.scripts.openfisca_command",
+            "args": [
+                "serve",
+                "--country-package",
+                "openfisca_rules",
+                "--bind",
+                "0.0.0.0:8800",
+                "--reload"
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: OpenFisca Test & Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "openfisca_core.scripts.openfisca_command",
+            "args": [
+                "test",
+                "--country-package",
+                "openfisca_rules",
+                "/app/openfisca-rules/openfisca_rules/tests"
+            ],
+            "justMyCode": true
+        }
+    ]
+}

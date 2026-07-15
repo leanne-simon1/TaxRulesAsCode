@@ -1,0 +1,135 @@
+# The enacted negative-gearing quarantine (ruleset section 3): commences for the
+# 2027-28 income year, for residential dwellings acquired on/after 7:30pm AEST
+# 12 May 2026, subject to the new-build/Minister/entity exceptions.
+
+- name: grandfathered by acquisition date - loss still fully deductible after commencement
+  period: 2028
+  input:
+    ng_income_year_start_date: 2028-07-01
+    ng_ownership_interest_acquired_date: 2020-01-01
+    ng_rental_income: 20000
+    ng_interest_and_ownership_expenses: 25000
+  output:
+    ng_reform_commenced_for_year: true
+    ng_grandfathered_by_acquisition_date: true
+    ng_quarantine_applies: false
+    ng_negative_gearing_offset_available: 5000
+
+- name: acquired after the announcement, established dwelling - loss is quarantined
+  period: 2028
+  input:
+    ng_income_year_start_date: 2028-07-01
+    ng_ownership_interest_acquired_date: 2026-06-01
+    ng_rental_income: 10000
+    ng_interest_and_ownership_expenses: 18000
+  output:
+    ng_grandfathered_by_acquisition_date: false
+    ng_quarantine_applies: true
+    ng_net_rental_result: -8000
+    ng_negative_gearing_offset_available: 0
+    ng_current_year_quarantined_excess: 8000
+    ng_quarantined_excess_after_dwelling_offset: 8000
+    ng_quarantined_amount_carried_forward: 8000
+
+- name: acquired after announcement but the 2026-27 transition year is not yet quarantined
+  period: 2027
+  input:
+    ng_income_year_start_date: 2026-07-01
+    ng_ownership_interest_acquired_date: 2026-06-01
+    ng_rental_income: 10000
+    ng_interest_and_ownership_expenses: 18000
+  output:
+    ng_reform_commenced_for_year: false
+    ng_grandfathered_by_acquisition_date: false
+    ng_quarantine_applies: false
+    ng_negative_gearing_offset_available: 8000
+
+- name: new-build exception applies even to a post-announcement acquisition
+  period: 2028
+  input:
+    ng_income_year_start_date: 2028-07-01
+    ng_ownership_interest_acquired_date: 2028-01-01
+    ng_is_new_residential_dwelling: true
+    ng_rental_income: 10000
+    ng_interest_and_ownership_expenses: 18000
+  output:
+    ng_dwelling_exempt_from_quarantine: true
+    ng_quarantine_applies: false
+    ng_negative_gearing_offset_available: 8000
+
+- name: SMSF is excepted from the quarantine (opposite of the current-law denials)
+  period: 2028
+  input:
+    ng_entity_kind: smsf
+    ng_income_year_start_date: 2028-07-01
+    ng_ownership_interest_acquired_date: 2028-01-01
+    ng_rental_income: 10000
+    ng_interest_and_ownership_expenses: 18000
+  output:
+    ng_exempt_from_quarantine: true
+    ng_quarantine_applies: false
+
+- name: a company is NOT excepted from the quarantine
+  period: 2028
+  input:
+    ng_entity_kind: company
+    ng_income_year_start_date: 2028-07-01
+    ng_ownership_interest_acquired_date: 2028-01-01
+    ng_rental_income: 10000
+    ng_interest_and_ownership_expenses: 18000
+  output:
+    ng_exempt_from_quarantine: false
+    ng_quarantine_applies: true
+    ng_current_year_quarantined_excess: 8000
+
+- name: quarantined excess reduced by other non-quarantined dwellings' net income
+  period: 2028
+  input:
+    ng_income_year_start_date: 2028-07-01
+    ng_ownership_interest_acquired_date: 2026-06-01
+    ng_rental_income: 10000
+    ng_interest_and_ownership_expenses: 18000
+    ng_other_non_quarantined_dwellings_net_income: 5000
+  output:
+    ng_current_year_quarantined_excess: 8000
+    ng_quarantined_excess_after_dwelling_offset: 3000
+
+- name: remaining quarantined excess applied against a residential capital gain
+  period: 2028
+  input:
+    ng_income_year_start_date: 2028-07-01
+    ng_ownership_interest_acquired_date: 2026-06-01
+    ng_rental_income: 10000
+    ng_interest_and_ownership_expenses: 18000
+    ng_other_non_quarantined_dwellings_net_income: 5000
+    ng_residential_capital_gain_available: 5000
+  output:
+    ng_quarantined_excess_after_dwelling_offset: 3000
+    ng_quarantined_amount_applied_to_capital_gains: 3000
+    ng_quarantined_amount_carried_forward: 0
+    ng_residential_capital_gain_after_offset: 2000
+
+- name: prior-year carried-forward quarantined amount is brought in this year
+  period: 2029
+  input:
+    ng_income_year_start_date: 2029-07-01
+    ng_ownership_interest_acquired_date: 2026-06-01
+    ng_rental_income: 20000
+    ng_interest_and_ownership_expenses: 5000
+    ng_prior_year_quarantined_carried_forward: 4000
+  output:
+    ng_net_rental_result: 15000
+    ng_current_year_quarantined_excess: 0
+    ng_quarantined_excess_after_dwelling_offset: 4000
+
+- name: bankruptcy extinguishes the prior-year carried-forward quarantined amount
+  period: 2029
+  input:
+    ng_income_year_start_date: 2029-07-01
+    ng_ownership_interest_acquired_date: 2026-06-01
+    ng_rental_income: 20000
+    ng_interest_and_ownership_expenses: 5000
+    ng_prior_year_quarantined_carried_forward: 4000
+    ng_taxpayer_bankrupt: true
+  output:
+    ng_quarantined_excess_after_dwelling_offset: 0

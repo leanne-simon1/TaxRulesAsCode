@@ -1,0 +1,7 @@
+description: Lower edge (in days late) of the "long delay" descriptive band for s 14ZX extension-of-time framing - editorial value maintained by tax specialists from the decided-case patterns (PS LA 2003/7), NOT a legislated threshold and never a factor weight
+metadata:
+  unit: day
+  reference: https://www.ato.gov.au/law/view/document?docid=psr%2Fps20037%2Fnat%2Fato%2F00001
+values:
+  2003-07-16:
+    value: 365

@@ -1,0 +1,78 @@
+# CGT current-rules vs amended-rules comparison (ruleset section 1.6). Individual,
+# $100k cost base, $300k proceeds => $200k gross gain, held > 12 months.
+# Inflation set to 0 except the indexation test, so the discount-vs-min-tax
+# arithmetic is exact.
+
+- name: current-only disposal (before 1 July 2027) - 50% discount, no reform impact
+  period: 2026
+  input:
+    cgt_entity_kind: individual
+    cgt_acquisition_date: 2015-01-01
+    cgt_disposal_date: 2026-06-01
+    cgt_cost_base: 100000
+    cgt_capital_proceeds: 300000
+    cgt_marginal_rate: 0.45
+    cgt_assumed_annual_inflation: 0
+  output:
+    cgt_is_long_term: true
+    cgt_gross_capital_gain: 200000
+    cgt_current_rules_taxable_gain: 100000
+    cgt_current_rules_tax: 45000
+    cgt_amended_rules_tax: 90000          # discount removed, whole gain at 45%
+    cgt_actual_regime: current_only
+    cgt_actual_tax: 45000             # grandfathered: disposed before the reform
+    cgt_actual_vs_current_difference: 0
+
+- name: amended-only disposal - low marginal rate exercises the 30% minimum tax floor
+  period: 2032
+  absolute_error_margin: 1
+  input:
+    cgt_entity_kind: individual
+    cgt_acquisition_date: 2028-01-01
+    cgt_disposal_date: 2032-01-01
+    cgt_cost_base: 100000
+    cgt_capital_proceeds: 300000
+    cgt_marginal_rate: 0.20
+    cgt_assumed_annual_inflation: 0
+  output:
+    cgt_current_rules_tax: 20000      # 100000 taxable * 20%
+    cgt_amended_rules_rate: 0.30          # max(20%, 30% minimum)
+    cgt_amended_rules_taxable_gain: 200000
+    cgt_amended_rules_tax: 60000
+    cgt_actual_regime: amended_only
+    cgt_actual_tax: 60000
+
+- name: amended-rules indexation relief reduces the taxable gain (2.5% inflation, ~10 yrs)
+  period: 2038
+  absolute_error_margin: 60
+  input:
+    cgt_entity_kind: individual
+    cgt_acquisition_date: 2028-01-01
+    cgt_disposal_date: 2038-01-01
+    cgt_cost_base: 100000
+    cgt_capital_proceeds: 300000
+    cgt_marginal_rate: 0.45
+    cgt_assumed_annual_inflation: 0.025
+  output:
+    cgt_indexation_relief: 28013      # 100000 * (1.025^10 - 1)
+    cgt_amended_rules_taxable_gain: 171987
+    cgt_amended_rules_tax: 77394
+    cgt_current_rules_tax: 45000
+    cgt_actual_regime: amended_only
+
+- name: complying super fund is unaffected by the reform (keeps 33 1/3% discount)
+  period: 2032
+  input:
+    cgt_entity_kind: complying_super_fund
+    cgt_acquisition_date: 2028-01-01
+    cgt_disposal_date: 2032-01-01
+    cgt_cost_base: 100000
+    cgt_capital_proceeds: 300000
+    cgt_marginal_rate: 0.15
+    cgt_assumed_annual_inflation: 0
+  output:
+    cgt_affected_by_reform: false
+    cgt_current_rules_taxable_gain: 133340   # 200000 * (1 - 0.3333)
+    cgt_current_rules_tax: 20001
+    cgt_amended_vs_current_difference: 0
+    cgt_actual_tax: 20001                     # unaffected even for post-reform dates

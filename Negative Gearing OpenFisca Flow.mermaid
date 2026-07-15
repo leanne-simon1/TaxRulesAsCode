@@ -1,0 +1,97 @@
+---
+title: Negative gearing ruleset - variable flow (presentation view of the modular rules)
+---
+flowchart TD
+    subgraph inputs [Inputs]
+        EK[ng_entity_kind]
+        ACQ[ng_ownership_interest_acquired_date]
+        IY[ng_income_year_start_date]
+        NB[ng_is_new_residential_dwelling]
+        ME[ng_is_minister_determined_exempt]
+        FB[ng_is_fringe_benefit_expenditure]
+        OP[ng_ownership_percentage]
+        RI[ng_rental_income]
+        IOE[ng_interest_and_ownership_expenses]
+        RE[ng_repairs_expense]
+        BE[ng_borrowing_expense_this_year]
+        CE[ng_construction_expenditure]
+        CSD[ng_construction_start_date]
+        SHA[ng_second_hand_depreciating_asset_decline_claimed]
+        TR[ng_travel_expense_claimed]
+        VL[ng_holds_vacant_land]
+        VLC[ng_vacant_land_holding_costs]
+        VLS[ng_land_has_rentable_structure_or_business_use]
+        ONI[ng_other_non_quarantined_dwellings_net_income]
+        CG[ng_residential_capital_gain_available]
+        PYQ[ng_prior_year_quarantined_carried_forward]
+        BK[ng_taxpayer_bankrupt]
+    end
+
+    subgraph params [Policy parameters - dated YAML]
+        PCW[negative_gearing.capital_works_rate = 2.5%]
+    end
+
+    EK --> ECL[ng_exempt_from_current_law_denials]
+    EK --> EQ[ng_exempt_from_quarantine]
+
+    CE --> CWD[ng_capital_works_deduction]
+    CSD --> CWD
+    PCW --> CWD
+
+    SHA --> SHD[ng_second_hand_asset_deductible_decline]
+    ECL --> SHD
+
+    TR --> TRD[ng_travel_deductible]
+    ECL --> TRD
+
+    VLC --> VLD[ng_vacant_land_deductible_costs]
+    VL --> VLD
+    VLS --> VLD
+
+    IOE --> TDE[ng_total_deductible_expenses]
+    RE --> TDE
+    BE --> TDE
+    CWD --> TDE
+    SHD --> TDE
+    TRD --> TDE
+    VLD --> TDE
+
+    RI --> NRR[ng_net_rental_result]
+    TDE --> NRR
+    OP --> NRR
+
+    IY --> RC[ng_reform_commenced_for_year]
+    ACQ --> GF[ng_grandfathered_by_acquisition_date]
+
+    GF --> DEQ[ng_dwelling_exempt_from_quarantine]
+    NB --> DEQ
+    ME --> DEQ
+
+    RC --> QA{ng_quarantine_applies}
+    DEQ --> QA
+    EQ --> QA
+    FB --> QA
+
+    NRR --> NGO[ng_negative_gearing_offset_available]
+    QA --> NGO
+
+    NRR --> CYQ[ng_current_year_quarantined_excess]
+    QA --> CYQ
+
+    CYQ --> QAO[ng_quarantined_excess_after_dwelling_offset]
+    PYQ --> QAO
+    BK --> QAO
+    ONI --> QAO
+
+    QAO --> QCG[ng_quarantined_amount_applied_to_capital_gains]
+    CG --> QCG
+
+    QAO --> QCF[ng_quarantined_amount_carried_forward]
+    QCG --> QCF
+
+    CG --> RGA[ng_residential_capital_gain_after_offset]
+    QCG --> RGA
+
+    NGO --> OUT1([Reduces other assessable income now])
+    QCF --> OUT2([Carried forward to next income year])
+    RGA --> OUT3([Flows into Capital Gains Tax Ruleset - cgt_capital_losses_applied])

@@ -1,0 +1,85 @@
+# EOT ruleset rules 1.1.1-1.1.5 and 1.6.2 - the deterministic shell around the
+# s 14ZX discretion. The engine decides whether the discretion is ENGAGED; it
+# never decides how it should be exercised.
+
+- name: in-time objection - nothing to extend, proposing an EOT outcome is flagged
+  period: 2025
+  input:
+    ato_decision_type: penalty_assessment
+    decision_notice_date: 2025-01-01
+    objection_lodgment_date: 2025-02-14
+    eot_request_in_writing: true
+    eot_request_states_circumstances_fully: true
+    eot_proposed_outcome: refuse
+  output:
+    objection_in_time: true
+    eot_days_late: 0
+    eot_delay_band: not_late
+    eot_discretion_engaged: false
+    eot_flag_discretion_not_engaged: true
+
+- name: late objection - the WRITTEN request gates engagement (s 14ZW(2)); an
+    inadequate "fully and in detail" statement does not (PS LA 2003/7 para 6 -
+    it raises the seek-further-information prompt instead)
+  period: 2025
+  input:
+    ato_decision_type: [penalty_assessment, penalty_assessment, penalty_assessment]
+    decision_notice_date: [2025-01-01, 2025-01-01, 2025-01-01]
+    objection_lodgment_date: [2025-03-23, 2025-03-23, 2025-03-23]
+    eot_request_in_writing: [true, false, true]
+    eot_request_states_circumstances_fully: [true, true, false]
+  output:
+    objection_in_time: [false, false, false]
+    can_request_extension: [true, true, true]
+    eot_days_late: [21, 21, 21]
+    eot_discretion_engaged: [true, false, true]
+    eot_art_review_available_if_refused: [true, false, true]
+    eot_prompt_seek_further_information: [false, false, true]
+
+- name: private ruling late - extension mechanism unavailable, discretion never engaged
+  period: 2025
+  input:
+    ato_decision_type: private_ruling
+    taxpayer_kind: individual
+    decision_notice_date: 2020-03-01
+    return_lodgment_due_date: 2020-05-15
+    has_assessment_for_ruling_period: false
+    objection_lodgment_date: 2025-06-30
+    eot_request_in_writing: true
+    eot_request_states_circumstances_fully: true
+    eot_proposed_outcome: agree
+  output:
+    has_objection_right: true
+    objection_in_time: false
+    can_request_extension: false
+    eot_discretion_engaged: false
+    eot_flag_discretion_not_engaged: true
+
+- name: GIC remission refusal - no objection right, so no extension question at all
+  period: 2025
+  input:
+    ato_decision_type: gic_remission_decision
+    decision_notice_date: 2025-01-01
+    objection_lodgment_date: 2025-06-30
+    eot_request_in_writing: true
+    eot_request_states_circumstances_fully: true
+    eot_proposed_outcome: refuse
+  output:
+    has_objection_right: false
+    eot_discretion_engaged: false
+    eot_flag_discretion_not_engaged: true
+
+- name: engaged discretion with no proposed outcome - no flags, decision is the human's
+  period: 2025
+  input:
+    ato_decision_type: penalty_assessment
+    decision_notice_date: 2025-01-01
+    objection_lodgment_date: 2025-03-23
+    eot_request_in_writing: true
+    eot_request_states_circumstances_fully: true
+    eot_proposed_outcome: undecided
+  output:
+    eot_discretion_engaged: true
+    eot_flag_discretion_not_engaged: false
+    eot_flag_atypical_refusal: false
+    eot_flag_atypical_grant: false

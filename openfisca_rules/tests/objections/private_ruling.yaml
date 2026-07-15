@@ -1,0 +1,65 @@
+# Decision inventory row 3 — private rulings (s 359-60 TAA 1953 Sch 1; s 14ZW(1A) TAA
+# 1953): objectable only while no assessment has been made for the ruling period;
+# period ends at the LATER of 60 days after the ruling and the taxpayer's 2-year/4-year
+# period (same split as income tax, corrected 2026-07-06 - previously encoded as a flat
+# 4 years) after the return lodgment due date; no extension of time is available for
+# late private-ruling objections.
+
+- name: individual - deadline is the later of 60 days or the 2-year limb
+  period: 2025
+  input:
+    ato_decision_type: private_ruling
+    taxpayer_kind: individual
+    has_assessment_for_ruling_period: false
+    decision_notice_date: 2025-03-01        # ruling given; + 60 days = 2025-04-30
+    return_lodgment_due_date: 2023-05-15    # + 2 years = 2025-05-15 (later)
+    objection_lodgment_date: 2025-05-15
+  output:
+    has_objection_right: true
+    objection_deadline: 2025-05-15
+    objection_in_time: true
+    recommended_pathway: lodge_objection
+
+- name: other taxpayer - deadline is the later of 60 days or the 4-year limb
+  period: 2025
+  input:
+    ato_decision_type: private_ruling
+    taxpayer_kind: other
+    has_assessment_for_ruling_period: false
+    decision_notice_date: 2025-03-01        # ruling given; + 60 days = 2025-04-30
+    return_lodgment_due_date: 2021-05-15    # + 4 years = 2025-05-15 (later)
+    objection_lodgment_date: 2025-05-15
+  output:
+    has_objection_right: true
+    objection_deadline: 2025-05-15
+    objection_in_time: true
+    recommended_pathway: lodge_objection
+
+- name: late private-ruling objection - no extension request available
+  period: 2025
+  input:
+    ato_decision_type: private_ruling
+    taxpayer_kind: other
+    has_assessment_for_ruling_period: false
+    decision_notice_date: 2025-03-01
+    return_lodgment_due_date: 2021-05-15
+    objection_lodgment_date: 2025-05-16
+  output:
+    has_objection_right: true
+    objection_in_time: false
+    can_request_extension: false
+    recommended_pathway: object_to_assessment_instead
+
+- name: assessment already made for the ruling period - object to the assessment instead
+  period: 2025
+  input:
+    ato_decision_type: private_ruling
+    has_assessment_for_ruling_period: true
+    decision_notice_date: 2025-03-01
+    return_lodgment_due_date: 2021-05-15
+    objection_lodgment_date: 2025-04-01
+  output:
+    has_objection_right: false
+    objection_in_time: false
+    can_request_extension: false
+    recommended_pathway: object_to_assessment_instead

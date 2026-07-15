@@ -1,0 +1,7 @@
+description: The tax-free threshold within the meaning of the Income Tax Rates Act 1986, which net labour income must EXCEED for WATO entitlement (s 61-155(1)(b) ITAA 1997). $18,200 since 1 July 2012. Must stay in step with the first bracket threshold of wato/resident_tax_scale.
+metadata:
+  unit: currency-AUD
+  reference: https://www.legislation.gov.au/C2004A03437/latest/text
+values:
+  2012-07-01:
+    value: 18200

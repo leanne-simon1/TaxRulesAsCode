@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CGT calculator — current vs new rules</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#9878;&#65039;</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Capital gains tax: current rules vs the 2027 reform</h1>
+    <p class="lede">
+      Enter a disposal — past or forecast — and the rules engine returns the CGT cost under
+      <strong>today's rules</strong> (50% discount), under the <strong>new rules</strong> that
+      commence 1 July 2027 (indexation + a 30% minimum tax), and your <strong>actual</strong>
+      grandfathered outcome given the dates. Every number, and its legislative reference, comes live
+      from <code>openfisca_rules/variables/cgt.py</code> — this page only asks and displays.
+    </p>
+    <div class="notice no-print">
+      <strong>Forecasting:</strong> acquisition and sale dates can be in the future. If you buy
+      <em>and</em> sell after 1 July 2027 the new rules apply in full; sell before and the current
+      rules apply; hold across that date and the gain is <strong>grandfathered</strong> — split
+      between the two regimes.
+    </div>
+
+    <div class="card">
+      <form class="inputs" id="input-form">
+        <div class="field">
+          <label for="entityKind">Who owns the asset?</label>
+          <select id="entityKind">
+            <option value="individual">Individual</option>
+            <option value="trust">Trust (individual beneficiary)</option>
+            <option value="complying_super_fund">Complying super fund (accumulation)</option>
+            <option value="company">Company</option>
+          </select>
+          <p class="help" id="entityKind-help">Individuals &amp; trusts are the ones the 2027 reform changes.</p>
+        </div>
+
+        <div class="field">
+          <label for="acquisitionDate">Acquisition date</label>
+          <input type="date" id="acquisitionDate">
+          <p class="help">When you bought (or will buy) the asset. A future date forecasts a future purchase.</p>
+        </div>
+
+        <div class="field">
+          <label for="disposalDate">Disposal date (contract date of the CGT event)</label>
+          <input type="date" id="disposalDate">
+          <p class="help">The <strong>contract</strong> date, not settlement. A future date forecasts a future sale.</p>
+        </div>
+
+        <div class="field">
+          <label for="costBase">Cost base (A$)</label>
+          <input type="number" id="costBase" min="0" step="1000" value="100000">
+          <p class="help">What the asset cost you (purchase + incidental, ownership, improvement costs).</p>
+        </div>
+
+        <div class="field">
+          <label for="proceeds">Sale proceeds (A$)</label>
+          <input type="number" id="proceeds" min="0" step="1000" value="300000">
+        </div>
+
+        <div class="field">
+          <label for="losses">Capital losses to apply (A$)</label>
+          <input type="number" id="losses" min="0" step="1000" value="0">
+          <p class="help">Current-year and carried-forward capital losses. Applied before any discount.</p>
+        </div>
+
+        <div class="field">
+          <label for="marginalRate">Your tax rate on the gain (%)</label>
+          <input type="number" id="marginalRate" min="0" max="100" step="0.5" value="45">
+          <p class="help">Individual top marginal rate excl. Medicare; company 25/30; super 15.</p>
+        </div>
+
+        <div class="field">
+          <label for="inflation">Assumed annual inflation (%)</label>
+          <input type="number" id="inflation" min="0" max="20" step="0.1" value="2.5">
+          <p class="help">Drives the new-rules indexation of the cost base. Only affects the new rules.</p>
+        </div>
+
+        <div class="field" id="f-transitionMethod" hidden>
+          <label for="transitionMethod">Grandfathering — how to split a gain straddling 1 July 2027</label>
+          <select id="transitionMethod">
+            <option value="time_apportionment">Time apportionment (gain accrues evenly)</option>
+            <option value="market_value">Market value at 1 July 2027</option>
+          </select>
+          <p class="help">Shown because your holding period spans the reform date.</p>
+        </div>
+
+        <div class="field" id="f-marketValue" hidden>
+          <label for="marketValue">Market value at 1 July 2027 (A$)</label>
+          <input type="number" id="marketValue" min="0" step="1000" value="0">
+          <p class="help">Used to split the pre- and post-reform gain under the market-value method.</p>
+        </div>
+      </form>
+      <div class="actions">
+        <button type="button" id="calc-btn">Calculate</button>
+      </div>
+    </div>
+
+    <div id="error-box"></div>
+
+    <section id="results" hidden>
+      <h2>CGT cost — three ways</h2>
+      <p class="muted" id="regime-line"></p>
+      <div class="results-grid" id="stat-cards"></div>
+
+      <h2>How the gain is worked out</h2>
+      <div class="card table-scroll">
+        <table id="breakdown"><tbody></tbody></table>
+      </div>
+
+      <h2>Why?</h2>
+      <p class="muted">
+        Citations below are read live from the rules engine's metadata — the same references an AI
+        assistant would cite when it uses this engine.
+      </p>
+      <div class="card" id="why"></div>
+
+      <div class="actions no-print">
+        <button type="button" class="secondary" onclick="window.print()">Print this result</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Guidance for exploring Rules as Code, not legal or tax advice. Models a
+    single post-1985 asset disposal; exempt assets, the main-residence and small-business
+    concessions, pre-CGT resets and new-build elections are out of scope — see
+    <a href="rulesets/Capital%20Gains%20Tax%20Ruleset.md">Capital Gains Tax Ruleset.md</a>. The
+    2027 reform is enacted (Tax Reform No. 1 Act 2026) but not yet commenced; specialist review
+    recommended.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script src="assets/cgt.js"></script>
+</body>
+</html>

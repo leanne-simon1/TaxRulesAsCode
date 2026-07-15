@@ -1,0 +1,7 @@
+description: Objection period in years for income tax assessments outside the standard amendment period, and for GST and FBT assessments and the long limb of the private-ruling and excess-concessional-contributions-determination rules (s 14ZW(1) TAA 1953)
+metadata:
+  unit: year
+  reference: https://www.legislation.gov.au/C1953A00001/latest/text#s14ZW
+values:
+  1992-03-01:
+    value: 4

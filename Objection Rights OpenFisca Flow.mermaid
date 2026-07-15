@@ -1,0 +1,56 @@
+---
+title: Objection rights ruleset - variable flow (presentation view of the modular rules)
+---
+flowchart TD
+    subgraph inputs [Inputs]
+        DT[ato_decision_type]
+        ND[decision_notice_date]
+        OND[original_assessment_notice_date]
+        RDD[return_lodgment_due_date]
+        HAR[has_assessment_for_ruling_period]
+        SICF[sic_remaining_fraction_of_shortfall]
+        TK[taxpayer_kind]
+        LD[objection_lodgment_date]
+    end
+
+    subgraph params [Policy parameters - dated YAML]
+        P60[objections.standard_period_days = 60]
+        P2[objections.shortened_review_period_years = 2]
+        P4[objections.full_review_period_years = 4]
+        PT[objections.sic_remission_objection_threshold = 0.2]
+    end
+
+    TK --> SAP[has_standard_amendment_period]
+
+    DT --> HOR{has_objection_right}
+    HAR --> HOR
+    SICF --> HOR
+    PT --> HOR
+
+    DT --> DL[objection_deadline]
+    ND --> DL
+    OND --> DL
+    RDD --> DL
+    SAP --> DL
+    P60 --> DL
+    P2 --> DL
+    P4 --> DL
+
+    HOR --> IT[objection_in_time]
+    LD --> IT
+    DL --> IT
+
+    HOR --> EXT[can_request_extension]
+    IT --> EXT
+    DT --> EXT
+
+    DT --> RP{{recommended_pathway}}
+    HOR --> RP
+    IT --> RP
+    EXT --> RP
+
+    RP --> O1([lodge_objection])
+    RP --> O2([objection_with_extension_request])
+    RP --> O3([object_to_assessment_instead])
+    RP --> O4([art_review])
+    RP --> O5([complaint_or_judicial_review])

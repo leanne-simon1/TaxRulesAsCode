@@ -1,0 +1,29 @@
+# EOT ruleset rules 1.2.1-1.2.2 - days late (calculated) and descriptive delay
+# bands (framing only, edges are specialist-maintained parameters: short <= 60
+# days late, long >= 365 days late). Boundary cases on each band edge.
+# Penalty assessment deadline: notice 2025-01-01 + 60 days = 2025-03-02.
+
+- name: delay band boundaries - deadline day, day after, short/moderate edge
+  period: 2025
+  input:
+    ato_decision_type: [penalty_assessment, penalty_assessment, penalty_assessment, penalty_assessment]
+    decision_notice_date: [2025-01-01, 2025-01-01, 2025-01-01, 2025-01-01]
+    objection_lodgment_date: [2025-03-02, 2025-03-03, 2025-05-01, 2025-05-02]
+    eot_request_in_writing: [true, true, true, true]
+    eot_request_states_circumstances_fully: [true, true, true, true]
+  output:
+    objection_deadline: [2025-03-02, 2025-03-02, 2025-03-02, 2025-03-02]
+    eot_days_late: [0, 1, 60, 61]
+    eot_delay_band: [not_late, short, short, moderate]
+
+- name: delay band boundaries - moderate/long edge (364 vs 365 days late)
+  period: 2026
+  input:
+    ato_decision_type: [penalty_assessment, penalty_assessment]
+    decision_notice_date: [2025-01-01, 2025-01-01]
+    objection_lodgment_date: [2026-03-01, 2026-03-02]
+    eot_request_in_writing: [true, true]
+    eot_request_states_circumstances_fully: [true, true]
+  output:
+    eot_days_late: [364, 365]
+    eot_delay_band: [moderate, long]

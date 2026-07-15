@@ -1,0 +1,14 @@
+docker-compose-yaml: docker-compose.yml
+
+project: rac-sandpit-co16-ato
+
+tasks: {}
+
+environments:
+  production:
+    routes:
+      - fisca-py:
+        - "c16-rac.salsadev.au":
+            tls-acme: false
+            insecure: Redirect
+            hstsEnabled: true

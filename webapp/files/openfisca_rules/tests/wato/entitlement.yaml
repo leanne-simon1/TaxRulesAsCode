@@ -1,0 +1,74 @@
+# WATO entitlement gates (ruleset rules 1.1.1-1.1.4): individual + resident +
+# commenced income year + net labour income above the tax-free threshold.
+
+- name: employee on $75,000 salary in 2027-28 gets the full $250
+  period: 2027
+  absolute_error_margin: 0.01
+  input:
+    wato_income_year_start_date: 2027-07-01
+    wato_salary_and_wages: 75000
+  output:
+    wato_commenced_for_year: true
+    wato_net_labour_income: 75000
+    wato_exceeds_tax_free_threshold: true
+    wato_entitled: true
+    wato_amount: 250
+    wato_receives_full_amount: true
+
+- name: not an individual (company/trust/partnership) - never entitled
+  period: 2027
+  input:
+    wato_is_individual: false
+    wato_salary_and_wages: 75000
+  output:
+    wato_entitled: false
+    wato_amount: 0
+
+- name: not an Australian resident at any time in the year - not entitled
+  period: 2027
+  input:
+    wato_is_australian_resident: false
+    wato_salary_and_wages: 75000
+  output:
+    wato_entitled: false
+    wato_amount: 0
+
+- name: pre-commencement income year (2026-27) - no entitlement however high the income
+  period: 2026
+  input:
+    wato_income_year_start_date: 2026-07-01
+    wato_salary_and_wages: 120000
+  output:
+    wato_commenced_for_year: false
+    wato_entitled: false
+    wato_amount: 0
+
+- name: net labour income exactly at the tax-free threshold does NOT exceed it
+  period: 2027
+  input:
+    wato_salary_and_wages: 18200
+  output:
+    wato_exceeds_tax_free_threshold: false
+    wato_entitled: false
+    wato_amount: 0
+
+- name: retiree on superannuation pension only - no labour amounts, no offset
+  period: 2027
+  input: {}
+  output:
+    wato_labour_amounts: 0
+    wato_net_labour_income: 0
+    wato_entitled: false
+    wato_amount: 0
+
+- name: sole trader - business income counts, business deductions come off
+  period: 2027
+  absolute_error_margin: 0.01
+  input:
+    wato_sole_trader_business_income: 60000
+    wato_labour_deductions: 20000
+  output:
+    wato_net_labour_income: 40000
+    wato_entitled: true
+    wato_amount: 250
+    wato_receives_full_amount: true

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maintain the rules — for non-coders</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Maintaining the rules &mdash; for non-coders</h1>
+    <p class="lede">
+      The Phase 5 question: can a tax technical specialist <strong>view and change</strong> the
+      encoded rules without reading Python? The plain-language rulesets and question specs below are
+      the artifacts a specialist owns &mdash; start there. The approaches further down each trial
+      one option from the project plan for viewing and changing what the engine runs.
+    </p>
+
+    <h2>The rulesets and question specs</h2>
+    <p>
+      The plain-language <strong>rulesets</strong> and <strong>question specs</strong> are the
+      artifacts a tax specialist owns &mdash; the code mirrors them. View or download them here to
+      review.
+    </p>
+    <div class="card table-scroll">
+      <table>
+        <thead><tr><th>Document</th><th>What it is</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a href="rulesets/PAYG%20Ruleset.md" target="_blank" rel="noopener">PAYG Ruleset</a></td>
+            <td class="muted">Numbered plain-language rule statements for the PAYGI variation calculation.</td>
+            <td><a href="rulesets/PAYG%20Ruleset.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/PAYG%20Form%20Questions.md" target="_blank" rel="noopener">PAYG Form Questions</a></td>
+            <td class="muted">The question flow the PAYGI calculator is built from.</td>
+            <td><a href="rulesets/PAYG%20Form%20Questions.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Objection%20Rights%20Ruleset.md" target="_blank" rel="noopener">Objection Rights Ruleset</a></td>
+            <td class="muted">Plain-language objection-rights rules (Part IVC TAA 1953). DRAFT — pending specialist review.</td>
+            <td><a href="rulesets/Objection%20Rights%20Ruleset.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Objection%20Form%20Questions.md" target="_blank" rel="noopener">Objection Form Questions</a></td>
+            <td class="muted">The question flow for the objection calculator and (later) chatbot.</td>
+            <td><a href="rulesets/Objection%20Form%20Questions.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Extension%20of%20Time%20Ruleset.md" target="_blank" rel="noopener">Extension of Time Ruleset</a></td>
+            <td class="muted">The s 14ZX extension-of-time sense-check rules — deterministic shell + factor record around a discretion the engine deliberately never decides. DRAFT — pending specialist review.</td>
+            <td><a href="rulesets/Extension%20of%20Time%20Ruleset.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Extension%20of%20Time%20Form%20Questions.md" target="_blank" rel="noopener">Extension of Time Form Questions</a></td>
+            <td class="muted">The officer-view three-stage flow behind the EOT sense check.</td>
+            <td><a href="rulesets/Extension%20of%20Time%20Form%20Questions.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Capital%20Gains%20Tax%20Ruleset.md" target="_blank" rel="noopener">Capital Gains Tax Ruleset</a></td>
+            <td class="muted">Current-law CGT plus the enacted 1 July 2027 reform (indexation, 30% minimum tax, grandfathering). Primary-source verified; specialist review recommended.</td>
+            <td><a href="rulesets/Capital%20Gains%20Tax%20Ruleset.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Capital%20Gains%20Tax%20Form%20Questions.md" target="_blank" rel="noopener">Capital Gains Tax Form Questions</a></td>
+            <td class="muted">The question flow the CGT calculator is built from.</td>
+            <td><a href="rulesets/Capital%20Gains%20Tax%20Form%20Questions.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Negative%20Gearing%20Ruleset.md" target="_blank" rel="noopener">Negative Gearing Ruleset</a></td>
+            <td class="muted">Current-law deductibility of rental losses plus the enacted 2027 quarantine (grandfathering, exemptions, carry-forward waterfall). EM-verified; specialist review recommended.</td>
+            <td><a href="rulesets/Negative%20Gearing%20Ruleset.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Negative%20Gearing%20Form%20Questions.md" target="_blank" rel="noopener">Negative Gearing Form Questions</a></td>
+            <td class="muted">The question flow the negative gearing tools and chat panel are built from.</td>
+            <td><a href="rulesets/Negative%20Gearing%20Form%20Questions.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Working%20Australians%20Tax%20Offset%20Ruleset.md" target="_blank" rel="noopener">Working Australians Tax Offset Ruleset</a></td>
+            <td class="muted">The $250 WATO from 2027-28 (new Subdivision 61-E ITAA 1997): entitlement gates, net labour income, phase-in. Primary-source verified; specialist review recommended.</td>
+            <td><a href="rulesets/Working%20Australians%20Tax%20Offset%20Ruleset.md" download>Download .md</a></td>
+          </tr>
+          <tr>
+            <td><a href="rulesets/Working%20Australians%20Tax%20Offset%20Form%20Questions.md" target="_blank" rel="noopener">Working Australians Tax Offset Form Questions</a></td>
+            <td class="muted">The question flow the WATO questionnaire and calculator are built from.</td>
+            <td><a href="rulesets/Working%20Australians%20Tax%20Offset%20Form%20Questions.md" download>Download .md</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-bottom:0">
+        These are published copies of the authoritative specs in the repository root; a deploy
+        refreshes them from those originals so they can't drift.
+      </p>
+    </div>
+
+    <h2>The Python rules source</h2>
+    <p>
+      The code that mirrors each ruleset above &mdash; every <code>Variable</code>, formula, dated
+      parameter and legislative <code>reference</code> the engine actually runs. These are served
+      from this server (a deploy refreshes them from the running package, so they can't drift):
+      <strong>View</strong> opens the source in the browser, <strong>Download</strong> saves the
+      raw <code>.py</code> file.
+    </p>
+    <div class="card table-scroll">
+      <table>
+        <thead><tr><th>Module</th><th>What it is</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a href="files/openfisca_rules/variables/payg.py" target="_blank" rel="noopener">payg.py</a></td>
+            <td class="muted">PAYGI variation calculation variables &mdash; encodes the PAYG Ruleset.</td>
+            <td><a href="files/openfisca_rules/variables/payg.py" download>Download .py</a></td>
+          </tr>
+          <tr>
+            <td><a href="files/openfisca_rules/variables/objections.py" target="_blank" rel="noopener">objections.py</a></td>
+            <td class="muted">Objection-rights variables (Part IVC TAA 1953) &mdash; encodes the Objection Rights Ruleset.</td>
+            <td><a href="files/openfisca_rules/variables/objections.py" download>Download .py</a></td>
+          </tr>
+          <tr>
+            <td><a href="files/openfisca_rules/variables/cgt.py" target="_blank" rel="noopener">cgt.py</a></td>
+            <td class="muted">Capital gains tax variables &mdash; encodes the Capital Gains Tax Ruleset (current law + the enacted 2027 reform).</td>
+            <td><a href="files/openfisca_rules/variables/cgt.py" download>Download .py</a></td>
+          </tr>
+          <tr>
+            <td><a href="files/openfisca_rules/variables/negative_gearing.py" target="_blank" rel="noopener">negative_gearing.py</a></td>
+            <td class="muted">Negative gearing variables &mdash; encodes the Negative Gearing Ruleset (current law + the enacted 2027 quarantine).</td>
+            <td><a href="files/openfisca_rules/variables/negative_gearing.py" download>Download .py</a></td>
+          </tr>
+          <tr>
+            <td><a href="files/openfisca_rules/variables/wato.py" target="_blank" rel="noopener">wato.py</a></td>
+            <td class="muted">Working Australians Tax Offset variables &mdash; encodes the WATO Ruleset (enacted, commences 2027-28).</td>
+            <td><a href="files/openfisca_rules/variables/wato.py" download>Download .py</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-bottom:0">
+        Every branch traces back to a numbered rule in the plain-language ruleset above &mdash;
+        cross-check them side by side, or browse the same metadata live in the
+        <a href="explorer.html">Legislation Explorer</a>.
+      </p>
+    </div>
+
+    <h2>Ways to view and change the rules</h2>
+    <p>
+      Each approach below trials one option from the project plan. All three read from the same
+      live engine, so none can drift from the rules that actually run &mdash; and the ones that
+      change anything produce a plain diff a specialist can review, not a code commit they have to
+      write.
+    </p>
+
+    <div class="tool-grid">
+      <div class="card">
+        <h2>1 · Ruleset &amp; parameters editor</h2>
+        <p>
+          The <strong>markdown-contract</strong> approach. Reads each rule's plain-language
+          statement and its dated policy values (time limits, thresholds, rates). Change a value in
+          a form and it generates the exact <strong>YAML edit</strong> ready to hand to the
+          maintainer, with a link to the current file on this server &mdash; CI tests still gate it.
+          This is the lowest-tooling, highest-leverage option.
+        </p>
+        <a class="button" href="ruleset-editor.html">Open the editor</a>
+      </div>
+
+      <div class="card">
+        <h2>2 · Decision-flow diagrams</h2>
+        <p>
+          The <strong>auto-generated diagram</strong> approach. Builds a Mermaid flowchart of how a
+          result is computed &mdash; every rule, input and policy parameter it depends on &mdash;
+          straight from the engine's own trace. Because it's generated, the picture can never fall
+          out of step with the code.
+        </p>
+        <a class="button" href="flow.html">Open the diagrams</a>
+      </div>
+
+      <div class="card">
+        <h2>3 · Legislation Explorer</h2>
+        <p>
+          The <strong>browsable reference</strong> approach, modelled on OpenFisca's Legislation
+          Explorer. Search every variable and parameter, read its documentation and legislative
+          references, and click through the dependencies from one rule to the next.
+        </p>
+        <a class="button" href="explorer.html">Open the explorer</a>
+      </div>
+    </div>
+
+    <h2>The maintenance loop</h2>
+    <div class="card">
+      <ol>
+        <li>A specialist reads the rule in plain language (<a href="explorer.html">explorer</a>) and
+          sees how it's computed (<a href="flow.html">diagram</a>).</li>
+        <li>To change a legislated value, they use the
+          <a href="ruleset-editor.html">editor</a> to produce the YAML diff.</li>
+        <li>The generated YAML goes to whoever maintains the repository; the
+          <a href="engine.html">engine's</a> YAML tests in CI gate the change before it can affect
+          any answer.</li>
+        <li>Every view here refreshes from the live engine, so the picture updates the moment the
+          change lands.</li>
+      </ol>
+    </div>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Outputs are guidance to explore Rules as Code, not tax advice.
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

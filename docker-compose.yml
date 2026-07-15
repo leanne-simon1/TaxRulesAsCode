@@ -1,0 +1,43 @@
+# This value intentionally matches the project name on Lagoon.
+# It is used to name the CLI_IMAGE to use as a build arg locally.
+x-lagoon-project: &lagoon-project
+  rac-sandpit-co16-ato
+
+x-image-version: &image-version
+  ${IMAGE_VERSION:-latest}
+
+x-environment:
+  &default-environment
+    LAGOON_PROJECT: *lagoon-project
+    # Route that should be used locally, if you are using pygmy, this route *must* end with .docker.amazee.io
+    LAGOON_LOCALDEV_URL: ${LOCALDEV_URL}
+
+x-volumes:
+  &default-volumes
+    # Define all volumes you would like to have real-time mounted into the docker containers
+    volumes:
+      - ./openfisca_rules:/app/openfisca-rules/openfisca_rules
+services:
+
+  fisca-py: # py container
+    build:
+      context: .
+      dockerfile: .docker/py.dockerfile
+      args:
+        IMAGE_VERSION: *image-version
+        LAGOON_PROJECT: *lagoon-project
+    image: *lagoon-project
+    labels:
+      lagoon.type: python
+    user: root
+    ports:
+      - 8800
+    << : *default-volumes
+    environment:
+      << : *default-environment # loads the defined environment variables from the top
+    networks:
+      - amazeeio-network
+
+networks:
+  amazeeio-network:
+    external: true

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tax Rules as Code — PAYGI showcase</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Tax rules engine showcase</h1>
+    <p class="lede">
+      Small tools built on governed rulesets. The tax rules live once, in the
+      <strong>OpenFisca rules engine</strong> — encoded from plain-language rulesets with
+      legislative references attached to every rule. Each tool below is just a thin view over the
+      same engine: none of them contain any tax logic of their own.
+    </p>
+
+    <h2>PAYG instalment variation</h2>
+    <div class="tool-grid">
+      <div class="card">
+        <h2>Variation calculator</h2>
+        <p>
+          A guided calculator for varying PAYG instalments: answer the BAS questions, the engine
+          returns the estimated tax (T8), varied amount payable (T9) and new varied rate (T3) —
+          each with a "why" citation drawn from the rule's own metadata. Includes a what-if
+          sensitivity table computed in a single batched engine call, and a <strong>Show the
+          working</strong> panel that renders the engine's full calculation trace — every rule that
+          fired, with its values and policy parameters.
+        </p>
+        <a class="button" href="calculator.html">Open calculator</a>
+      </div>
+    </div>
+
+    <h2>Objection rights (Part IVC TAA 1953)</h2>
+    <p class="lede">
+      Whether a taxpayer can object to an ATO decision, and by when — encoded from
+      <a href="rulesets/Objection%20Rights%20Ruleset.md">Objection Rights Ruleset.md</a> and driven by
+      the same engine, same conventions, same "why" citations as the PAYGI tools above.
+    </p>
+    <div class="tool-grid">
+      <div class="card">
+        <h2>Objection calculator</h2>
+        <p>
+          Answer questions about the ATO decision you're dissatisfied with — the engine returns
+          whether you have an objection right, your deadline, whether you're in time, and the
+          recommended pathway, each with its legislative reference. A built-in
+          <strong>eligibility help</strong> panel summarises which decisions you can and can't
+          object to and the time limits — generated live by the rules engine, in the style of the
+          ATO's
+          <a href="https://www.ato.gov.au/individuals-and-families/your-tax-return/if-you-disagree-with-an-ato-decision/object-to-a-decision/eligibility-to-lodge-an-objection" target="_blank" rel="noopener">Eligibility
+          to lodge an objection</a> page.
+        </p>
+        <a class="button" href="objection-calculator.html">Open objection calculator</a>
+      </div>
+
+      <div class="card">
+        <h2>Extension of time (s&nbsp;14ZX) sense check</h2>
+        <p>
+          Can a rules engine help with a <strong>discretionary</strong> decision without making it?
+          An officer-view tool for late-objection extension requests: the engine decides the
+          deterministic gatekeepers (is a valid request even before the Commissioner?), calculates
+          the delay, records the PS&nbsp;LA&nbsp;2003/7 factor findings with citations, and
+          <strong>sense-checks a proposed outcome</strong> against decided-case patterns — while the
+          grant/refuse call itself deliberately has no variable in the engine. Three worked
+          examples show how this grounds a Copilot-style assistant. Encoded from
+          <a href="rulesets/Extension%20of%20Time%20Ruleset.md">Extension of Time Ruleset.md</a>.
+        </p>
+        <a class="button" href="eot.html">Open the EOT sense check</a>
+      </div>
+    </div>
+
+    <h2>Capital gains tax (2027 reform)</h2>
+    <p class="lede">
+      Compare the CGT cost of a disposal under today's 50% discount and the enacted 1 July 2027
+      rules (indexation + a 30% minimum tax), forecast future buys and sells, and see the
+      grandfathered outcome for a gain that straddles the reform — encoded from
+      <a href="rulesets/Capital%20Gains%20Tax%20Ruleset.md">Capital Gains Tax Ruleset.md</a>.
+    </p>
+    <div class="tool-grid">
+      <div class="card">
+        <h2>CGT calculator</h2>
+        <p>
+          Enter an acquisition and disposal (past or future) and the engine returns the CGT cost
+          under current rules, the new rules, and your actual grandfathered outcome, each with its
+          legislative reference. Accounts for the 12-month discount, indexation, the 30% minimum
+          tax, entity type, and the transitional split at 1 July 2027.
+        </p>
+        <a class="button" href="cgt-calculator.html">Open the CGT calculator</a>
+      </div>
+    </div>
+
+    <h2>Negative gearing (2027 quarantine)</h2>
+    <p class="lede">
+      Whether a rental loss still offsets your other income, or is quarantined under the enacted
+      2027 reform — grandfathering by acquisition date, new-build exemptions, and the s&nbsp;26-155(6)
+      carry-forward waterfall, encoded from
+      <a href="rulesets/Negative%20Gearing%20Ruleset.md">Negative Gearing Ruleset.md</a>.
+    </p>
+    <div class="tool-grid">
+      <div class="card">
+        <h2>Negative gearing focus page</h2>
+        <p>
+          Four views over one ruleset: a <strong>grandfathering timeline</strong> showing where your
+          acquisition falls, a <strong>before/after calculator</strong> comparing the same property
+          under current law and the quarantine, a <strong>multi-property waterfall dashboard</strong>
+          for a whole portfolio, and a <strong>chat panel</strong> that collects your facts and lets
+          the engine decide — citing the legislation behind every answer.
+        </p>
+        <a class="button" href="negative-gearing.html">Open the negative gearing tools</a>
+      </div>
+    </div>
+
+    <h2>Working Australians Tax Offset (from 2027-28)</h2>
+    <p class="lede">
+      The $250 WATO — whether you're entitled, how much you get, and why: an individual Australian
+      resident whose net labour income exceeds $18,200, phasing in at 14c/$ to the full $250 —
+      encoded from
+      <a href="rulesets/Working%20Australians%20Tax%20Offset%20Ruleset.md">Working Australians Tax
+      Offset Ruleset.md</a> (new Subdivision&nbsp;61-E ITAA 1997).
+    </p>
+    <div class="tool-grid">
+      <div class="card">
+        <h2>Worker offset (WATO) tools</h2>
+        <p>
+          Three ways to use one ruleset: an <strong>eligibility questionnaire</strong> that asks a
+          question at a time and lets the engine decide against the four entitlement gates, an
+          <strong>offset calculator</strong> whose phase-in curve is swept point-by-point through
+          the engine in one batched call, and a <strong>show-the-working trace</strong> of every
+          rule and dated parameter behind the answer.
+        </p>
+        <a class="button" href="wato.html">Open the WATO tools</a>
+      </div>
+    </div>
+
+    <h2>Under the hood</h2>
+    <div class="tool-grid">
+      <div class="card">
+        <h2>Rules model</h2>
+        <p>
+          Browse everything the engine encodes, folder by folder — each ruleset, its dated policy
+          parameters (with value-over-time charts), the inputs it needs and the rules it computes,
+          each traceable to legislation. Read live from the engine, so it can never drift from the
+          rules that actually run.
+        </p>
+        <a class="button" href="model.html">Browse the rules</a>
+      </div>
+
+      <div class="card">
+        <h2>Rules engine API</h2>
+        <p>
+          How the tools above talk to the engine — the base URL, every HTTP endpoint
+          (<code>/calculate</code>, <code>/trace</code>, <code>/variables</code>,
+          <code>/parameters</code>, <code>/spec</code>), the shape of a request, and worked examples
+          in curl, Python and JavaScript you can run against the live engine.
+        </p>
+        <a class="button" href="engine.html">Open the API reference</a>
+      </div>
+
+      <div class="card">
+        <h2>Maintain rules (non-coders)</h2>
+        <p>
+          The Phase 5 trial: ways for a tax specialist to view and change the rules without
+          reading Python — an editable plain-language ruleset with the dated policy values, an
+          auto-generated decision-flow diagram, and a searchable Legislation Explorer over every
+          variable and parameter (each faithful to the live engine), plus the rulesets themselves
+          to download.
+        </p>
+        <a class="button" href="maintain.html">Open the maintenance tools</a>
+      </div>
+    </div>
+
+    <h2>Why this matters</h2>
+    <div class="card">
+      <ul>
+        <li><strong>One source of truth</strong> — calculator, explanation view, documentation and (later) chatbot all call the same governed rules via the same API.</li>
+        <li><strong>Traceable to law</strong> — every rule carries a reference to ato.gov.au or legislation; answers arrive with their citations.</li>
+        <li><strong>Maintainable by specialists</strong> — policy values (like the corporate tax rate) are dated YAML parameters, and the rules explorer gives non-coders a faithful view of what is encoded.</li>
+        <li><strong>Testable</strong> — the ruleset ships with executable YAML test scenarios; CI blocks any change that breaks them.</li>
+      </ul>
+      <p class="muted">
+        Raw engine endpoints: <a href="api/spec" target="_blank" rel="noopener">OpenAPI spec</a> ·
+        <a href="api/variables" target="_blank" rel="noopener">variables</a> ·
+        <a href="api/parameters" target="_blank" rel="noopener">parameters</a> ·
+        <a href="api/entities" target="_blank" rel="noopener">entities</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Results assume the PAYG ruleset's constraints (base rate entity,
+    quarterly instalment payer, standard income year — see the rules explorer). Outputs are
+    guidance to explore Rules as Code, not tax advice.
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

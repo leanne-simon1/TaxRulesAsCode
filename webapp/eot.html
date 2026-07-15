@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Extension of time (s 14ZX) — sense check</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#9878;&#65039;</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Extension of time to object (s&nbsp;14ZX) — decision sense check</h1>
+    <p class="lede">
+      The s&nbsp;14ZX discretion — whether to accept a late objection — is a <strong>judgement-based
+      decision</strong>: a human weighs the factors, and no rules engine (or AI) should make it.
+      But the discretion sits inside a deterministic legal shell, and this page shows the rules
+      engine holding exactly that line: the engine <strong>decides</strong> the gatekeepers
+      (is the request even validly before the Commissioner?), <strong>calculates</strong> the delay,
+      <strong>records</strong> the officer's factor findings with legislative citations, and
+      <strong>sense-checks</strong> a proposed outcome against decided-case patterns — while the
+      grant/refuse call itself has <em>no variable in the engine at all</em>. This is the grounding
+      a Copilot-style assistant needs: it can call these rules instead of free-generating law.
+    </p>
+
+    <div class="notice">
+      <strong>Who this is for.</strong> Unlike the objection calculator (a taxpayer view), this is
+      an <strong>officer / reviewer view</strong>: it assumes a late objection with an extension
+      request is on the desk and a decision is being drafted. Ruleset:
+      <a href="rulesets/Extension%20of%20Time%20Ruleset.md">Extension of Time Ruleset.md</a> (DRAFT,
+      pending tax specialist review).
+    </div>
+
+    <h2>Three worked examples</h2>
+    <p class="muted">
+      Each button fills the form below with a scenario and asks the live engine. The three
+      examples demonstrate the three tiers of value: a hard jurisdictional catch, an
+      atypical-refusal prompt, and an atypical-grant prompt.
+    </p>
+    <div class="tool-grid">
+      <div class="card">
+        <h2>1 · The request that isn't one</h2>
+        <p>
+          An officer drafts a <strong>refusal</strong> of an "extension request" — but the engine
+          computes the objection was lodged <strong>in time</strong>. There is nothing to extend:
+          deciding this request at all would be an error, whatever the merits. This is the
+          deterministic Level&nbsp;1–2 shell a Copilot must never get wrong — and with the engine,
+          it can't.
+        </p>
+        <button type="button" class="secondary" data-example="a">Load example 1</button>
+      </div>
+      <div class="card">
+        <h2>2 · Refusing an all-favourable profile</h2>
+        <p>
+          Three weeks late, the explanation covers the whole period, the case is arguable, no
+          concrete prejudice, no resting on rights — and the draft says <strong>refuse</strong>.
+          The engine doesn't overrule anyone; it raises a flag asking the decision maker to
+          articulate what outweighs a profile that decided cases treat as strongly favourable.
+        </p>
+        <button type="button" class="secondary" data-example="b">Load example 2</button>
+      </div>
+      <div class="card">
+        <h2>3 · Granting the classic refusal pattern</h2>
+        <p>
+          Two years late after resting on rights, with an explanation gap and no contributing ATO
+          conduct — and the draft says <strong>agree</strong>. The engine flags the recurring
+          refusal pattern and asks what displaces it. Switch the proposal to <em>refuse</em> and
+          re-check: the flag goes away — the weighing is the human's.
+        </p>
+        <button type="button" class="secondary" data-example="c">Load example 3</button>
+      </div>
+    </div>
+
+    <h2>Sense-check a decision</h2>
+    <div class="card">
+      <form class="inputs" id="input-form">
+        <h3>Stage 1 — the deterministic shell (engine decides)</h3>
+        <div class="field">
+          <label for="decisionType">What decision was the late objection against?</label>
+          <select id="decisionType"></select>
+        </div>
+        <div class="field" id="f-noticeDate">
+          <label for="noticeDate">Date on the notice of the decision</label>
+          <input type="date" id="noticeDate">
+          <p class="help" id="noticeDate-help">The date the notice was given to the taxpayer.</p>
+        </div>
+        <div class="field">
+          <label for="lodgmentDate">Date the objection was lodged</label>
+          <input type="date" id="lodgmentDate">
+        </div>
+        <div class="field" id="f-taxpayerKind" hidden>
+          <label for="taxpayerKind">Kind of taxpayer</label>
+          <select id="taxpayerKind">
+            <option value="individual">Individual</option>
+            <option value="small_business_entity">Small business entity</option>
+            <option value="other">Other (company, trust, partnership outside the SBE rules, super fund, ...)</option>
+          </select>
+          <p class="help">Drives the 2-year vs 4-year objection period (s 170(1) ITAA 1936 items 1-3A).</p>
+        </div>
+        <div class="field" id="f-originalNoticeDate" hidden>
+          <label for="originalNoticeDate">Date on the notice of the ORIGINAL assessment</label>
+          <input type="date" id="originalNoticeDate">
+        </div>
+        <div class="field" id="f-hasAssessment" hidden>
+          <label for="hasAssessment">Assessment already made for the ruling period?</label>
+          <select id="hasAssessment">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+        <div class="field" id="f-returnDueDate" hidden>
+          <label for="returnDueDate">Last day allowed for lodging the return the ruling relates to</label>
+          <input type="date" id="returnDueDate">
+        </div>
+        <div class="field" id="f-relatedNoticeDate" hidden>
+          <label for="relatedNoticeDate">Date on the notice of the related income tax assessment</label>
+          <input type="date" id="relatedNoticeDate">
+        </div>
+        <div class="field" id="f-sicFraction" hidden>
+          <label for="sicFraction">Unremitted SIC as a percentage of the tax shortfall</label>
+          <input type="number" id="sicFraction" min="0" max="100" step="0.1" value="25">
+        </div>
+        <div class="field">
+          <label for="reqWriting">Was a WRITTEN extension request lodged with the objection? (s&nbsp;14ZW(2))</label>
+          <select id="reqWriting">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="reqFully">Does it state the circumstances of the lateness FULLY AND IN DETAIL? (s&nbsp;14ZW(3))</label>
+          <select id="reqFully">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+          <p class="help">
+            If No, the request is still validly before the Commissioner — the engine raises the
+            PS&nbsp;LA&nbsp;2003/7 [6] prompt to invite further information instead (it can never be
+            the sole ground of refusal).
+          </p>
+        </div>
+
+        <h3>Stage 2 — the factor record (human findings, engine-recorded)</h3>
+        <p class="help">
+          These are the decision maker's findings under PS LA 2003/7 — the engine records and
+          cites them; it never infers them.
+        </p>
+        <div class="field">
+          <label for="fExplains">Does the explanation genuinely account for the WHOLE period of delay?</label>
+          <select id="fExplains"><option value="true">Yes</option><option value="false" selected>No</option></select>
+        </div>
+        <div class="field">
+          <label for="fArguable">Is the objection arguable (not frivolous, not bound to fail in law)?</label>
+          <select id="fArguable"><option value="true">Yes</option><option value="false" selected>No</option></select>
+          <p class="help">A low bar — no full merits investigation.</p>
+        </div>
+        <div class="field">
+          <label for="fPrejudice">Is concrete prejudice to the Commissioner identified?</label>
+          <select id="fPrejudice"><option value="true">Yes</option><option value="false" selected>No</option></select>
+          <p class="help">Administrative inconvenience is not prejudice.</p>
+        </div>
+        <div class="field">
+          <label for="fAtoConduct">Did ATO conduct (action or inaction) contribute to the delay?</label>
+          <select id="fAtoConduct"><option value="true">Yes</option><option value="false" selected>No</option></select>
+        </div>
+        <div class="field">
+          <label for="fRested">Did the taxpayer rest on their rights while time ran?</label>
+          <select id="fRested"><option value="true">Yes</option><option value="false" selected>No</option></select>
+        </div>
+
+        <h3>Stage 3 — the proposed decision (sense-checked, never made, by the engine)</h3>
+        <div class="field">
+          <label for="proposedOutcome">Proposed s&nbsp;14ZX outcome</label>
+          <select id="proposedOutcome">
+            <option value="undecided">Undecided — no sense check yet</option>
+            <option value="agree">Agree — treat the objection as lodged in time</option>
+            <option value="refuse">Refuse the request</option>
+          </select>
+        </div>
+      </form>
+      <div class="actions">
+        <button type="button" id="calc-btn">Sense-check with the rules engine</button>
+      </div>
+    </div>
+
+    <div id="error-box"></div>
+
+    <section id="results" hidden>
+      <h2>Engine result</h2>
+      <div class="results-grid" id="stat-cards"></div>
+
+      <div id="flag-box"></div>
+
+      <h2>The factor record (what a Copilot cites)</h2>
+      <p class="muted">
+        The structured record the engine hands to any AI assistant: each finding, with the
+        governed citation behind it — instead of the assistant's "general legal knowledge".
+      </p>
+      <div class="table-scroll">
+        <table id="factor-table">
+          <thead><tr><th>Factor</th><th>Finding</th><th>Basis</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h2>What the engine deliberately does not answer</h2>
+      <div class="card">
+        <p>
+          There is <strong>no variable</strong> in the engine for whether the request should be
+          granted or refused. The s&nbsp;14ZX discretion is evaluative and balancing — no scoring,
+          no matrices, no decision tree, no factor determinative. The engine's flags mark a
+          proposal as <em>jurisdictionally unavailable</em> or <em>atypical against decided-case
+          patterns</em>; they never decide. If a flag fires on a decision you stand behind, the
+          answer is better articulation in the reasons — not a different decision.
+        </p>
+        <p class="muted">
+          This boundary is rule 1.4.1 of the ruleset, and it is what keeps the discretion lawful:
+          a mechanical rule that dictated the outcome would fetter it.
+        </p>
+      </div>
+
+      <details class="help-section" id="authority-panel">
+        <summary>The authority base (closed citation list)</summary>
+        <div class="help-body">
+          <p class="muted">
+            The decided cases behind the factor patterns — a <strong>closed, traceable authority
+            base</strong> so an AI assistant cites from a governed list instead of its "general
+            legal knowledge". Full case table with verification notes:
+            <code>research/eot/case-table.md</code> in the repository. The cases inform the
+            patterns; none of them decides an individual request.
+          </p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Authority</th><th>Court</th><th>Stands for</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="http://classic.austlii.edu.au/au/cases/cth/FCA/1984/176.html" target="_blank" rel="noopener"><em>Hunter Valley Developments v Cohen</em></a> (1984) 3 FCR 344</td>
+                  <td>FCA (Wilcox J)</td>
+                  <td>The aggregated EOT principles: acceptable explanation; resting on rights vs continuing to contest; prejudice; merits; fairness</td>
+                </tr>
+                <tr>
+                  <td><a href="http://classic.austlii.edu.au/au/cases/cth/FCA/1999/563.html" target="_blank" rel="noopener"><em>Brown v Commissioner of Taxation</em></a> [1999] FCA 563</td>
+                  <td>FCA (Hill J)</td>
+                  <td>The leading s&nbsp;14ZX case (PS&nbsp;LA&nbsp;2003/7 [16]): balance delay, explanation, circumstances and prejudice to the Commissioner against the taxpayer's lost review right; arguable case required</td>
+                </tr>
+                <tr>
+                  <td><a href="http://classic.austlii.edu.au/au/cases/cth/FCA/1999/1198.html" target="_blank" rel="noopener"><em>FC of T v Brown</em></a> 99 ATC 4852 (Full Court)</td>
+                  <td>FCA Full Court</td>
+                  <td>Upheld Hill J's balancing formulation on appeal</td>
+                </tr>
+                <tr>
+                  <td><a href="http://classic.austlii.edu.au/au/cases/cth/FCA/1993/843.html" target="_blank" rel="noopener"><em>Windshuttle v DFC of T</em></a> (1993) 46 FCR 235</td>
+                  <td>FCA (von Doussa J)</td>
+                  <td>Prejudice = lost documents, faded recollections, dried-up enquiries; arguable case shown by indicating the factual assertions — no merits trial</td>
+                </tr>
+                <tr>
+                  <td><a href="http://classic.austlii.edu.au/au/cases/cth/FCAFC/2017/131.html" target="_blank" rel="noopener"><em>FCT v Primary Health Care Ltd</em></a> [2017] FCAFC 131</td>
+                  <td>FCA Full Court</td>
+                  <td>Modern application: the Tribunal's grant of extensions (years out of time) upheld against the Commissioner's refusal — s&nbsp;14ZX(4) review is real</td>
+                </tr>
+                <tr>
+                  <td><a href="http://classic.austlii.edu.au/au/cases/cth/HCA/1996/25.html" target="_blank" rel="noopener"><em>Brisbane South Regional Health Authority v Taylor</em></a> (1996) 186 CLR 541</td>
+                  <td>High Court</td>
+                  <td>Why time limits exist and how delay degrades the quality of justice (general principle, applied by analogy)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <details class="help-section" id="copilot-panel">
+        <summary>What a Copilot sees (the grounded tool call)</summary>
+        <div class="help-body">
+          <p class="muted">
+            The exact exchange an AI assistant would have with the engine for the scenario above —
+            a deterministic, auditable tool call in place of free-generated legal conclusions.
+            The same YAML tests that gate changes to these rules double as the assistant's
+            ground-truth evaluation set.
+          </p>
+          <h3>Request — <code>POST api/calculate</code></h3>
+          <pre id="copilot-request" class="code-block"></pre>
+          <h3>Response (engine-computed fields)</h3>
+          <pre id="copilot-response" class="code-block"></pre>
+        </div>
+      </details>
+
+      <h2>Why?</h2>
+      <p class="muted">Citations read live from the engine's rule metadata.</p>
+      <div class="card" id="why"></div>
+
+      <div class="actions no-print">
+        <button type="button" class="secondary" onclick="window.print()">Print this result</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Guidance for exploring Rules as Code, not legal or tax advice, and not
+    an ATO system. The factor patterns paraphrase PS LA 2003/7 and decided-case patterns and are
+    DRAFT pending tax specialist review — see
+    <a href="rulesets/Extension%20of%20Time%20Ruleset.md">Extension of Time Ruleset.md</a>.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script src="assets/eot.js"></script>
+</body>
+</html>

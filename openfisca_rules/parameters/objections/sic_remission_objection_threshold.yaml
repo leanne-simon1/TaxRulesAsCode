@@ -1,0 +1,7 @@
+description: A shortfall interest charge remission decision is objectable only where the SIC left unremitted exceeds this fraction of the tax shortfall (s 280-170 TAA 1953 Sch 1)
+metadata:
+  unit: /1
+  reference: https://www.legislation.gov.au/C1953A00001/latest/text#s280-170
+values:
+  2005-06-29:
+    value: 0.2

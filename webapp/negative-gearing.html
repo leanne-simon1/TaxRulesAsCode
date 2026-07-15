@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Negative gearing — current law vs the 2027 quarantine</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Negative gearing: current law vs the 2027 quarantine</h1>
+    <p class="lede">
+      Four views over one ruleset. From the 2027-28 income year, net rental losses on a residential
+      dwelling acquired on or after <strong>7:30pm AEST 12 May 2026</strong> are
+      <strong>quarantined</strong> — usable only against other rental income or residential capital
+      gains, otherwise carried forward. Everything below is computed live by the rules engine from
+      <a href="rulesets/Negative%20Gearing%20Ruleset.md">Negative Gearing Ruleset.md</a>; this page
+      only asks and displays.
+    </p>
+    <div class="notice no-print">
+      <strong>Enacted, not yet commenced:</strong> the quarantine (Treasury Laws Amendment (Tax
+      Reform No.&nbsp;1) Act 2026, Schedule 2 — new s&nbsp;26-155 ITAA 1997) applies to losses
+      incurred in the 2027-28 income year and later. Interests acquired before the Budget
+      announcement are <strong>grandfathered</strong>; new residential dwellings are exempt.
+    </div>
+
+    <div id="error-box"></div>
+
+    <!-- ================================================= 1 · grandfathering timeline -->
+    <h2 id="timeline">1 · Where do you stand? — grandfathering timeline</h2>
+    <p class="muted">
+      Pick your contract date and the income year you're asking about. The timeline shows where you
+      fall against the two dates that matter; the verdict underneath is the engine's, not the page's.
+    </p>
+    <div class="card">
+      <form class="inputs" id="tl-form">
+        <div class="field">
+          <label for="tl-acquired">Contract date you acquired (or will acquire) the property</label>
+          <input type="date" id="tl-acquired" value="2026-09-01">
+          <p class="help">The contract date, not settlement.</p>
+        </div>
+        <div class="field">
+          <label for="tl-year">Income year you're asking about</label>
+          <select id="tl-year"></select>
+        </div>
+        <div class="field">
+          <label for="tl-entity">Who holds the property?</label>
+          <select id="tl-entity"></select>
+          <p class="help">Super funds and widely held trusts are excepted from the quarantine.</p>
+        </div>
+        <div class="field">
+          <label for="tl-newbuild">Exemptions that override the acquisition date</label>
+          <label style="font-weight:400;display:flex;gap:0.5rem;align-items:center">
+            <input type="checkbox" id="tl-newbuild" style="width:auto"> New residential dwelling (first holder since construction)
+          </label>
+          <label style="font-weight:400;display:flex;gap:0.5rem;align-items:center">
+            <input type="checkbox" id="tl-minister" style="width:auto"> Minister-determined exempt (e.g. affordable housing)
+          </label>
+        </div>
+      </form>
+      <div id="tl-chart" class="tl-chart" role="img" aria-label="Timeline of the negative gearing reform dates"></div>
+      <div id="tl-verdict"></div>
+    </div>
+
+    <!-- ================================================= 2 · before / after calculator -->
+    <h2 id="compare">2 · Before / after — what the quarantine changes for one property</h2>
+    <p class="muted">
+      One set of property facts, two engine runs: the income year before the reform commences and a
+      year after. If your property is grandfathered or exempt, the two columns come back identical —
+      that's the engine saying the reform doesn't touch you.
+    </p>
+    <div class="card">
+      <form class="inputs" id="ba-form">
+        <div class="field">
+          <label for="ba-entity">Who holds the property?</label>
+          <select id="ba-entity"></select>
+        </div>
+        <div class="field">
+          <label for="ba-acquired">Contract date of acquisition</label>
+          <input type="date" id="ba-acquired" value="2026-09-01">
+        </div>
+        <div class="field">
+          <label for="ba-year">"After" income year</label>
+          <select id="ba-year"></select>
+          <p class="help">The "before" column is always the 2026-27 income year (pre-quarantine).</p>
+        </div>
+        <div class="field">
+          <label for="ba-share">Your legal ownership share (%)</label>
+          <input type="number" id="ba-share" min="0" max="100" step="1" value="100">
+        </div>
+        <div class="field">
+          <label for="ba-rent">Rental income for the year (A$)</label>
+          <input type="number" id="ba-rent" min="0" step="100" value="26000">
+        </div>
+        <div class="field">
+          <label for="ba-interest">Loan interest, rates, insurance, agent fees (A$)</label>
+          <input type="number" id="ba-interest" min="0" step="100" value="38000">
+        </div>
+        <div class="field">
+          <label for="ba-repairs">Repairs (not improvements) (A$)</label>
+          <input type="number" id="ba-repairs" min="0" step="100" value="1500">
+        </div>
+        <div class="field">
+          <label for="ba-borrowing">This year's share of borrowing costs (A$)</label>
+          <input type="number" id="ba-borrowing" min="0" step="50" value="0">
+        </div>
+        <div class="field">
+          <label for="ba-works">Construction cost of the building (A$)</label>
+          <input type="number" id="ba-works" min="0" step="1000" value="0">
+          <p class="help">Drives the 2.5%/yr Division 43 capital works deduction (post-Feb-1992 builds).</p>
+        </div>
+        <div class="field">
+          <label for="ba-newbuild">Quarantine exemptions</label>
+          <label style="font-weight:400;display:flex;gap:0.5rem;align-items:center">
+            <input type="checkbox" id="ba-newbuild" style="width:auto"> New residential dwelling
+          </label>
+          <label style="font-weight:400;display:flex;gap:0.5rem;align-items:center">
+            <input type="checkbox" id="ba-minister" style="width:auto"> Minister-determined exempt
+          </label>
+        </div>
+      </form>
+      <div class="actions">
+        <button type="button" id="ba-btn">Compare before and after</button>
+      </div>
+    </div>
+    <section id="ba-results" hidden>
+      <div class="results-grid" id="ba-cards"></div>
+      <p class="muted" id="ba-line"></p>
+      <div class="card table-scroll">
+        <table id="ba-table">
+          <thead>
+            <tr><th>Engine output</th><th class="num">Before (2026-27)</th><th class="num" id="ba-after-col">After</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <details class="help-section"><summary>Why? — the rules behind these numbers</summary>
+        <div class="help-body" id="ba-why"><p class="loading">Loading rule references…</p></div>
+      </details>
+    </section>
+
+    <!-- ================================================= 3 · portfolio waterfall -->
+    <h2 id="portfolio">3 · Multi-property portfolio — the quarantine waterfall</h2>
+    <p class="muted">
+      Add each property you hold. Every property is priced by the engine in one batched call; the
+      waterfall then shows how this year's quarantined losses are worked down — netted against
+      non-quarantined rental income, applied to residential capital gains, and the rest carried
+      forward — each step an engine output under new s&nbsp;26-155(6).
+    </p>
+    <div class="card">
+      <form class="inputs" id="pf-form">
+        <div class="field">
+          <label for="pf-name">Property label</label>
+          <input type="text" id="pf-name" placeholder="e.g. 12 Smith St" maxlength="40">
+        </div>
+        <div class="field">
+          <label for="pf-acquired">Contract date acquired</label>
+          <input type="date" id="pf-acquired" value="2026-09-01">
+        </div>
+        <div class="field">
+          <label for="pf-rent">Rental income (A$/yr)</label>
+          <input type="number" id="pf-rent" min="0" step="100" value="26000">
+        </div>
+        <div class="field">
+          <label for="pf-expenses">Deductible expenses incl. interest (A$/yr)</label>
+          <input type="number" id="pf-expenses" min="0" step="100" value="38000">
+        </div>
+        <div class="field">
+          <label for="pf-newbuild">&nbsp;</label>
+          <label style="font-weight:400;display:flex;gap:0.5rem;align-items:center">
+            <input type="checkbox" id="pf-newbuild" style="width:auto"> New residential dwelling (exempt)
+          </label>
+        </div>
+      </form>
+      <div class="actions">
+        <button type="button" id="pf-add">Add property</button>
+        <button type="button" class="secondary" id="pf-demo">Load a demo portfolio</button>
+      </div>
+      <div class="table-scroll" style="margin-top:0.8rem">
+        <table id="pf-table" hidden>
+          <thead><tr><th>Property</th><th>Acquired</th><th class="num">Rent</th><th class="num">Expenses</th><th>Status</th><th class="num">Net result</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <form class="inputs">
+        <div class="field">
+          <label for="pf-year">Income year</label>
+          <select id="pf-year"></select>
+        </div>
+        <div class="field">
+          <label for="pf-entity">Who holds the portfolio?</label>
+          <select id="pf-entity"></select>
+        </div>
+        <div class="field">
+          <label for="pf-carried">Quarantined amount carried forward from last year (A$)</label>
+          <input type="number" id="pf-carried" min="0" step="100" value="0">
+        </div>
+        <div class="field">
+          <label for="pf-gain">Residential capital gain available this year (A$)</label>
+          <input type="number" id="pf-gain" min="0" step="1000" value="0">
+        </div>
+      </form>
+      <div class="actions">
+        <button type="button" id="pf-btn">Calculate the portfolio</button>
+      </div>
+    </div>
+    <section id="pf-results" hidden>
+      <div class="results-grid" id="pf-cards"></div>
+      <div class="card">
+        <h3 style="margin-top:0">The quarantine waterfall</h3>
+        <div id="pf-waterfall" class="table-scroll"></div>
+        <p class="muted" id="pf-waterfall-note"></p>
+      </div>
+      <p class="muted">
+        Multi-property netting uses the engine's aggregate input
+        (<code>ng_other_non_quarantined_dwellings_net_income</code>) as documented in the ruleset's
+        scope notes — per-property quarantine status and net results are individual engine runs.
+      </p>
+    </section>
+
+    <!-- ================================================= 4 · chat panel -->
+    <h2 id="chat">4 · Ask the engine — a chat grounded in the rules</h2>
+    <p class="muted">
+      The Phase 4 pattern in miniature: <strong>the chat collects the facts, the rules engine makes
+      the decision, the citations come from the rules' own metadata.</strong> This panel is a
+      scripted slot-filler (no AI model runs in your browser) — an LLM chatbot would drive exactly
+      the same <code>/calculate</code> call and quote the same references, never computing the
+      answer itself.
+    </p>
+    <div class="card chat-panel">
+      <div id="chat-log" class="chat-log" aria-live="polite"></div>
+      <div id="chat-quick" class="chat-quick"></div>
+      <form id="chat-form" class="chat-input">
+        <input type="text" id="chat-text" placeholder="Type your answer…" autocomplete="off" aria-label="Chat answer">
+        <button type="submit">Send</button>
+      </form>
+      <p class="help" style="margin:0.4rem 0 0">Type <code>restart</code> at any time to start over.</p>
+    </div>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Guidance for exploring Rules as Code, not legal or tax advice. Models one
+    dwelling per calculation with the ruleset's documented simplifications — the Ministerial
+    instruments (new-build definition, further exemptions) do not exist yet and are taken as direct
+    yes/no inputs; the 7:30pm time-of-day boundary on 12 May 2026 is compared at day granularity.
+    See <a href="rulesets/Negative%20Gearing%20Ruleset.md">Negative Gearing Ruleset.md</a>.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script src="assets/negative-gearing.js"></script>
+</body>
+</html>

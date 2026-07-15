@@ -1,0 +1,41 @@
+# Decision inventory rows 9-11 — the "no" branches a chatbot most needs to get right:
+# SIC remission decisions are objectable only where the unremitted SIC exceeds 20% of
+# the shortfall (s 280-170 TAA 1953 Sch 1); GIC remission decisions carry no objection
+# right (complaint or judicial review only); a refused s 14ZX extension request is not
+# objectable but is reviewable by the ART.
+
+- name: SIC remission - objectable above the 20% threshold, not at or below it
+  period: 2025
+  input:
+    ato_decision_type: [sic_remission_decision, sic_remission_decision]
+    sic_remaining_fraction_of_shortfall: [0.25, 0.10]
+    decision_notice_date: [2025-01-01, 2025-01-01]
+    objection_lodgment_date: [2025-03-02, 2025-01-15]
+  output:
+    has_objection_right: [true, false]
+    objection_deadline: [2025-03-02, 2025-03-02]
+    objection_in_time: [true, false]
+    recommended_pathway: [lodge_objection, complaint_or_judicial_review]
+
+- name: GIC remission refusal - no objection right, complaint or judicial review
+  period: 2025
+  input:
+    ato_decision_type: gic_remission_decision
+    decision_notice_date: 2025-01-01
+    objection_lodgment_date: 2025-01-15
+  output:
+    has_objection_right: false
+    objection_in_time: false
+    can_request_extension: false
+    recommended_pathway: complaint_or_judicial_review
+
+- name: refusal of an extension of time to object - ART review, not objection
+  period: 2025
+  input:
+    ato_decision_type: objection_extension_refusal
+    decision_notice_date: 2025-01-01
+    objection_lodgment_date: 2025-01-15
+  output:
+    has_objection_right: false
+    can_request_extension: false
+    recommended_pathway: art_review

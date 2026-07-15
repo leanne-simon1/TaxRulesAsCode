@@ -1,0 +1,41 @@
+description: Resident individual basic income tax rate scale (Income Tax Rates Act 1986, Sch 7) - used to compute the s 61-160(b) hypothetical "basic income tax liability if taxable income were only net labour income". Carries the legislated first-bracket cuts 16% -> 15% (1 July 2026) -> 14% (1 July 2027), so the WATO phase-in rate is 14c/$ from commencement.
+metadata:
+  type: marginal_rate
+  threshold_unit: currency-AUD
+  rate_unit: /1
+  reference: https://www.legislation.gov.au/C2004A03437/latest/text
+brackets:
+  - threshold:
+      2024-07-01:
+        value: 0
+    rate:
+      2024-07-01:
+        value: 0
+  - threshold:
+      2024-07-01:
+        value: 18200
+    rate:
+      2024-07-01:
+        value: 0.16
+      2026-07-01:
+        value: 0.15
+      2027-07-01:
+        value: 0.14
+  - threshold:
+      2024-07-01:
+        value: 45000
+    rate:
+      2024-07-01:
+        value: 0.30
+  - threshold:
+      2024-07-01:
+        value: 135000
+    rate:
+      2024-07-01:
+        value: 0.37
+  - threshold:
+      2024-07-01:
+        value: 190000
+    rate:
+      2024-07-01:
+        value: 0.45

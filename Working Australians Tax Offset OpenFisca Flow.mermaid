@@ -1,0 +1,52 @@
+---
+title: Working Australians Tax Offset ruleset - variable flow (presentation view of the modular rules)
+---
+flowchart TD
+    subgraph inputs [Inputs]
+        IND[wato_is_individual]
+        RES[wato_is_australian_resident]
+        IY[wato_income_year_start_date]
+        SW[wato_salary_and_wages]
+        ST[wato_sole_trader_business_income]
+        PSI[wato_personal_services_income]
+        ESS[wato_ess_discounts]
+        LH[wato_labour_hire_payments]
+        LD[wato_labour_deductions]
+    end
+
+    subgraph params [Policy parameters - dated YAML]
+        PMAX[wato.max_offset_amount = $250]
+        PTFT[wato.tax_free_threshold = $18,200]
+        PSCALE[wato.resident_tax_scale = 0% / 14% / 30% / 37% / 45%]
+    end
+
+    SW --> LA[wato_labour_amounts]
+    ST --> LA
+    PSI --> LA
+    ESS --> LA
+    LH --> LA
+
+    LA --> NLI[wato_net_labour_income]
+    LD --> NLI
+
+    IY --> COM[wato_commenced_for_year]
+
+    NLI --> EXC[wato_exceeds_tax_free_threshold]
+    PTFT --> EXC
+
+    IND --> ENT{wato_entitled}
+    RES --> ENT
+    COM --> ENT
+    EXC --> ENT
+
+    NLI --> TAX[wato_tax_on_net_labour_income]
+    PSCALE --> TAX
+
+    ENT --> AMT[wato_amount]
+    TAX --> AMT
+    PMAX --> AMT
+
+    AMT --> FULL[wato_receives_full_amount]
+    PMAX --> FULL
+
+    AMT --> OUT1([Reduces tax payable on assessment - non-refundable, s 63-10 item 3])

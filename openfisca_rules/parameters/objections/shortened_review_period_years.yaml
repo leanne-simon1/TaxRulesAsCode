@@ -1,0 +1,7 @@
+description: Objection period in years for income tax assessments where the standard (2-year) amendment period applies - items 1, 2, 3, 3A of the s 170(1) ITAA 1936 table (s 14ZW(1)(aa) TAA 1953); also drives the long limb of the private-ruling and excess-concessional-contributions-determination rules for taxpayers on the standard period; applies to assessments for the 2004-05 income year onward
+metadata:
+  unit: year
+  reference: https://www.legislation.gov.au/C1953A00001/latest/text#s14ZW
+values:
+  2004-07-01:
+    value: 2

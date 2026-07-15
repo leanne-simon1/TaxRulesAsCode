@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PAYGI variation calculator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>PAYG instalment variation calculator</h1>
+    <p class="lede">
+      Estimate this year's tax and work out a varied instalment amount (T9) and varied rate (T3)
+      for your BAS. Every figure below is calculated by the rules engine — this page only asks the
+      questions and displays the answers.
+    </p>
+
+    <div class="card">
+      <form class="inputs" id="input-form"></form>
+      <div class="actions">
+        <button type="button" id="calc-btn">Calculate</button>
+        <span class="muted" id="period-note"></span>
+      </div>
+    </div>
+
+    <div id="error-box"></div>
+
+    <section id="results" hidden>
+      <h2>Your results</h2>
+      <div class="results-grid" id="stat-cards"></div>
+      <p class="muted" id="negative-note" hidden>
+        A negative varied amount payable means your year-to-date instalments already exceed the
+        year-to-date share of your estimated tax — on the BAS this is claimed as a variation
+        credit (label 5B) rather than an amount payable.
+      </p>
+
+      <h2>Intermediate steps</h2>
+      <div class="card table-scroll" id="steps"></div>
+
+      <h2>Show the working</h2>
+      <p class="muted">
+        The same answer, traced. This calls the engine's <code>/trace</code> endpoint and renders
+        the full calculation tree: every rule that fired, the values it used, and the dated policy
+        parameters applied. Nodes with no children are your inputs;
+        <span class="pill">parameter</span> rows are dated policy values. This is the transparency
+        layer an AI chatbot will cite in later phases.
+      </p>
+      <details class="card" id="working">
+        <summary>Show the calculation trace</summary>
+        <div class="trace" id="trace"></div>
+      </details>
+
+      <h2>What if your income estimate changes?</h2>
+      <p class="muted">
+        Five scenarios (income estimate −20% to +20%) computed by the engine in a
+        <strong>single batched API call</strong> — the same rules, vectorised.
+      </p>
+      <div class="card table-scroll" id="sensitivity"></div>
+
+      <h2>Why these numbers?</h2>
+      <p class="muted">
+        Citations below are read live from the rules engine's metadata — the same references an AI
+        assistant will cite when it uses this engine.
+      </p>
+      <div class="card" id="why"></div>
+    </section>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Assumes the PAYG ruleset's constraints (base rate entity, quarterly
+    instalment payer, standard income year). Outputs are guidance to explore Rules as Code, not
+    tax advice.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script>
+    const OUTPUTS = [
+      ['estimated_net_tax_payable', 'year'],
+      ['estimated_tax', 'year'],
+      ['fraction_year_to_date', 'month'],
+      ['instalment_adjustment_year_to_date', 'month'],
+      ['varied_amount_payable', 'month'],
+      ['new_varied_rate', 'month'],
+    ];
+
+    const form = document.getElementById('input-form');
+    renderInputForm(form, savedInputs());
+
+    document.getElementById('calc-btn').addEventListener('click', calculate);
+    form.addEventListener('submit', (e) => { e.preventDefault(); calculate(); });
+
+    async function calculate() {
+      const errorBox = document.getElementById('error-box');
+      errorBox.replaceChildren();
+      let v;
+      try { v = readInputForm(); } catch (err) { showError(errorBox, err); return; }
+
+      const { entity, periods } = buildEntity(v, OUTPUTS);
+      document.getElementById('period-note').textContent =
+        `BAS period ${periods.month} · year variables keyed to ${periods.year}`;
+
+      try {
+        const res = await apiPost('calculate', { tax_entities: { tax_entity: entity } });
+        const out = res.tax_entities.tax_entity;
+        const val = (name, level) => out[name][level === 'year' ? periods.year : periods.month];
+
+        renderStats(val, periods);
+        renderSteps(val);
+        document.getElementById('results').hidden = false;
+        renderWhy();
+        await renderSensitivity(v, periods);
+        await renderTrace(v);
+      } catch (err) {
+        showError(errorBox, err);
+      }
+    }
+
+    /* -------- Show the working: the /trace calculation tree -------- */
+
+    const TRACE_OUTPUTS = [
+      ['varied_amount_payable', 'month'],
+      ['new_varied_rate', 'month'],
+    ];
+    let variablesIndex = null;
+
+    async function renderTrace(v) {
+      const box = document.getElementById('trace');
+      box.replaceChildren(el('p', { class: 'loading' }, 'Tracing the calculation…'));
+      const { entity } = buildEntity(v, TRACE_OUTPUTS);
+      if (!variablesIndex) variablesIndex = await apiGet('variables');
+      const res = await apiPost('trace', { tax_entities: { tax_entity: entity } });
+      box.replaceChildren(...res.requestedCalculations.map(
+        (key) => renderNode(key, res.trace, true)));
+    }
+
+    function renderNode(key, trace, open) {
+      const m = key.match(/^(.*)<(.*)>$/);
+      const name = m ? m[1] : key;
+      const period = m ? m[2] : '';
+      const node = trace[key] || { value: ['?'], dependencies: [], parameters: {} };
+      const label = variablesIndex?.[name]?.description || '';
+      const isInput = (node.dependencies || []).length === 0;
+
+      const summary = el('summary', {},
+        el('code', {}, name), ` ⟨${period}⟩ = `,
+        el('span', { class: 'val' }, formatTraceValue(name, node.value?.[0])),
+        label ? el('span', { class: 'meta' }, ` — ${label}`) : null,
+        el('span', { class: isInput ? 'pill input' : 'pill formula' }, isInput ? 'your input' : 'rule'));
+
+      const children = [];
+      for (const [pKey, pVal] of Object.entries(node.parameters || {})) {
+        const pm = pKey.match(/^\.?(.*)<(.*)>$/);
+        children.push(el('div', { class: 'meta' },
+          el('span', { class: 'pill' }, 'parameter'), ' ',
+          el('code', {}, pm ? pm[1] : pKey), ` (as at ${pm ? pm[2] : '?'}) = `,
+          el('strong', {}, String(pVal))));
+      }
+      for (const dep of node.dependencies || []) {
+        children.push(renderNode(dep, trace, false));
+      }
+
+      const details = el('details', {}, summary, ...children);
+      if (open) details.setAttribute('open', '');
+      return details;
+    }
+
+    function formatTraceValue(name, value) {
+      if (typeof value !== 'number') return String(value);
+      if (name === 'new_varied_rate') return pct(value);
+      if (name === 'fraction_year_to_date' || name === 'current_quarter') {
+        return value.toLocaleString('en-AU', { maximumFractionDigits: 2 });
+      }
+      return aud(value);
+    }
+
+    function renderStats(val, periods) {
+      const cards = document.getElementById('stat-cards');
+      const t9 = val('varied_amount_payable', 'month');
+      cards.replaceChildren(
+        stat('Estimated tax for the year', aud(val('estimated_tax', 'year')), 'BAS label T8', false),
+        stat(`Varied amount payable (Q${document.getElementById('quarter').value})`, aud(t9), 'BAS label T9', t9 < 0),
+        stat('New varied rate', pct(val('new_varied_rate', 'month')), 'BAS label T3', false),
+      );
+      document.getElementById('negative-note').hidden = t9 >= 0;
+    }
+
+    function stat(label, value, bas, negative) {
+      return el('div', { class: negative ? 'stat negative' : 'stat' },
+        el('div', { class: 'label' }, label),
+        el('div', { class: 'value' }, value),
+        el('div', { class: 'bas' }, bas));
+    }
+
+    function renderSteps(val) {
+      const rows = [
+        ['Estimated net tax payable', 'estimated_net_tax_payable', aud(val('estimated_net_tax_payable', 'year'))],
+        ['Estimated tax for the year (floored at $0)', 'estimated_tax', aud(val('estimated_tax', 'year'))],
+        ['Year-to-date fraction', 'fraction_year_to_date', String(val('fraction_year_to_date', 'month'))],
+        ['Year-to-date instalment adjustment (5A − 5B)', 'instalment_adjustment_year_to_date', aud(val('instalment_adjustment_year_to_date', 'month'))],
+        ['Varied amount payable (T8 × fraction − adjustment)', 'varied_amount_payable', aud(val('varied_amount_payable', 'month'))],
+        ['New varied rate (T8 ÷ instalment income × 100)', 'new_varied_rate', pct(val('new_varied_rate', 'month'))],
+      ];
+      const table = el('table', {},
+        el('thead', {}, el('tr', {}, el('th', {}, 'Step'), el('th', {}, 'Rule'), el('th', { class: 'num' }, 'Value'))),
+        el('tbody', {}, rows.map(([label, name, value]) =>
+          el('tr', {}, el('td', {}, label), el('td', {}, el('code', {}, name)), el('td', { class: 'num' }, value)))));
+      document.getElementById('steps').replaceChildren(table);
+    }
+
+    async function renderSensitivity(v, periods) {
+      const box = document.getElementById('sensitivity');
+      box.replaceChildren(el('p', { class: 'loading' }, 'Calculating scenarios…'));
+
+      const factors = [0.8, 0.9, 1.0, 1.1, 1.2];
+      const entities = {};
+      factors.forEach((f, i) => {
+        const scenario = { ...v, income: Math.round(v.income * f * 100) / 100 };
+        entities[`s${i}`] = buildEntity(scenario, OUTPUTS).entity;
+      });
+
+      const res = await apiPost('calculate', { tax_entities: entities });
+      const rows = factors.map((f, i) => {
+        const out = res.tax_entities[`s${i}`];
+        return el('tr', { class: f === 1.0 ? 'current' : '' },
+          el('td', {}, f === 1.0 ? 'Your estimate' : `${f < 1 ? '−' : '+'}${Math.round(Math.abs(1 - f) * 100)}%`),
+          el('td', { class: 'num' }, aud(Math.round(v.income * f * 100) / 100)),
+          el('td', { class: 'num' }, aud(out.estimated_tax[periods.year])),
+          el('td', { class: 'num' }, aud(out.varied_amount_payable[periods.month])),
+          el('td', { class: 'num' }, pct(out.new_varied_rate[periods.month])));
+      });
+      box.replaceChildren(el('table', {},
+        el('thead', {}, el('tr', {},
+          el('th', {}, 'Scenario'), el('th', { class: 'num' }, 'Taxable income'),
+          el('th', { class: 'num' }, 'Estimated tax (T8)'),
+          el('th', { class: 'num' }, 'Varied amount (T9)'),
+          el('th', { class: 'num' }, 'Varied rate (T3)'))),
+        el('tbody', {}, rows)));
+    }
+
+    async function renderWhy() {
+      const box = document.getElementById('why');
+      box.replaceChildren(el('p', { class: 'loading' }, 'Loading rule references…'));
+      const names = OUTPUTS.map(([n]) => n);
+      const metas = await Promise.all(names.map(variableMeta));
+      box.replaceChildren(...metas.map((meta) => el('div', { class: 'why-item' },
+        el('div', {},
+          el('strong', {}, meta.description || meta.id), ' ',
+          el('code', {}, meta.id)),
+        meta.documentation ? el('p', { class: 'doc' }, meta.documentation.trim()) : null,
+        meta.references?.length
+          ? el('div', { class: 'refs' }, 'Reference: ', referenceLinks(meta.references))
+          : null,
+      )));
+    }
+  </script>
+</body>
+</html>

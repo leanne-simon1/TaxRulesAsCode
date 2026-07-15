@@ -1,0 +1,7 @@
+description: CGT discount percentage for trusts (s 115-100 ITAA 1997). Flows through to beneficiaries; 50% for an asset held at least 12 months. Abolished for gains accruing from 1 July 2027 (Tax Reform No. 1 Act 2026), handled in the formula by date.
+metadata:
+  unit: /1
+  reference: https://www.legislation.gov.au/C2004A05138/latest/text#s115-100
+values:
+  1999-09-21:
+    value: 0.5

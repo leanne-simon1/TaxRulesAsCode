@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API — call the rules engine</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>The rules engine API</h1>
+    <p class="lede">
+      Every tool on this site is a thin client of one governed rules engine. The tax rules live
+      once — encoded from plain-language rulesets in <a href="https://openfisca.org/doc/"
+      target="_blank" rel="noopener">OpenFisca</a>, with a legislative reference on every rule — and
+      are served over a small HTTP API. This page is the developer reference: the base URL, the
+      endpoints, the shape of a request, worked examples in three languages, and a console to call
+      the live engine yourself. To browse the rules and values themselves, see the
+      <a href="model.html">rules model</a>.
+    </p>
+
+    <div id="error-box"></div>
+
+    <h2>What the engine holds</h2>
+    <div class="tool-grid tool-grid--four">
+      <div class="card">
+        <h2 id="c-variables">…</h2>
+        <p>
+          <strong>Variables.</strong> Every fact and every rule is a named variable. Some are
+          <span class="pill input">inputs</span>; the rest are <span class="pill formula">rules</span>
+          — formulas that compute one thing from others. Browse them in the
+          <a href="model.html">rules model</a>.
+        </p>
+      </div>
+      <div class="card">
+        <h2 id="c-parameters">…</h2>
+        <p>
+          <strong>Parameters.</strong> Policy values that change over time (rates, thresholds,
+          objection time limits) are dated YAML values, each with its own value-over-time history.
+        </p>
+      </div>
+      <div class="card">
+        <h2 id="c-entities">…</h2>
+        <p>
+          <strong>Entities.</strong> Variables are computed for an entity (here, a single generic
+          tax entity) over a period — one case or thousands in a single vectorised call.
+        </p>
+      </div>
+      <div class="card">
+        <h2>Traceable to law</h2>
+        <p>
+          <strong>References.</strong> Every variable and parameter carries a citation, so answers
+          arrive <em>with</em> their sources — what lets an AI assistant ground its replies.
+        </p>
+      </div>
+    </div>
+
+    <h2>Base URL &amp; access</h2>
+    <div class="card">
+      <p style="margin-top:0">
+        The engine is reached under a relative <code>api/</code> path, so the tools work unchanged
+        behind a reverse proxy. From a browser on this site, that is all you need:
+      </p>
+      <pre class="table-scroll"><code id="base-url">api/</code></pre>
+      <p class="muted">
+        There is no authentication and no rate limit on this proof-of-concept deployment — it serves
+        only public rules metadata and stateless calculations, holding no personal data. To run it
+        yourself, the whole engine is one container:
+        <code>docker compose -f docker-compose.home.yml up</code> (see <code>DEPLOY.md</code>), which
+        serves this same API on <code>localhost:8850/api/</code>. Because it is one origin, no CORS
+        configuration is needed.
+      </p>
+    </div>
+
+    <h2>Endpoints</h2>
+    <p class="muted">
+      <code>GET</code> endpoints are read-only metadata and open in a new tab. The two
+      <code>POST</code> endpoints take a JSON body (see below).
+    </p>
+    <div class="card table-scroll">
+      <table id="endpoints">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>What it returns</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h2>Anatomy of a request</h2>
+    <p class="muted">
+      A <code>POST api/calculate</code> body is a <strong>situation</strong>: one or more entities,
+      each carrying the variables you know as <code>{ period: value }</code>, and the outputs you
+      want set to <code>null</code> — the engine fills those in. Periods are a year (<code>"2024"</code>)
+      or a month (<code>"2024-02"</code>) depending on the variable's definition.
+    </p>
+    <div class="card">
+      <pre class="table-scroll"><code>{
+  "tax_entities": {              <span class="cmt">// a name you choose for this case</span>
+    "my_case": {
+      "ato_decision_type":     { "2024": "income_tax_assessment" },  <span class="cmt">// input</span>
+      "decision_notice_date":  { "2024": "2024-02-15" },            <span class="cmt">// input</span>
+      "taxpayer_kind":         { "2024": "individual" },            <span class="cmt">// input</span>
+      "has_objection_right":   { "2024": null },   <span class="cmt">// output — please compute</span>
+      "objection_deadline":    { "2024": null },   <span class="cmt">// output — please compute</span>
+      "objection_in_time":     { "2024": null }    <span class="cmt">// output — please compute</span>
+    }
+  }
+}</code></pre>
+      <p class="muted" style="margin-bottom:0">
+        The response echoes the same shape with the <code>null</code>s replaced by computed values.
+        <code>POST api/trace</code> takes an identical body and additionally returns the dependency
+        tree behind each result. Which variables are inputs vs outputs, and what periods they use,
+        is all discoverable from <code>GET api/variables</code> and the <a href="model.html">rules
+        model</a>.
+      </p>
+    </div>
+
+    <h2>Worked example</h2>
+    <p class="muted">
+      Ask the objection-rights ruleset whether an individual can object to an income tax assessment,
+      and by when. Same call, three ways:
+    </p>
+    <div class="card">
+      <div class="tabs" id="code-tabs" role="tablist">
+        <button class="tab-btn active" data-lang="curl" role="tab">curl</button>
+        <button class="tab-btn" data-lang="python" role="tab">Python</button>
+        <button class="tab-btn" data-lang="js" role="tab">JavaScript</button>
+      </div>
+      <pre class="table-scroll"><code id="code-sample"></code></pre>
+    </div>
+
+    <h2>Try it live</h2>
+    <p class="muted">
+      A real <code>POST api/calculate</code> against this deployment's engine. Edit the body and run
+      it — the engine answers with the computed values filled in.
+    </p>
+    <div class="card">
+      <label for="payload" class="muted" style="font-weight:600">Request body</label>
+      <textarea id="payload" rows="16" spellcheck="false"
+        style="width:100%;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:0.85rem;border:1px solid var(--line);border-radius:8px;background:var(--code-bg);color:var(--text);padding:0.8rem 1rem"></textarea>
+      <div class="actions">
+        <button type="button" id="run-btn">Run POST api/calculate</button>
+        <button type="button" class="secondary" id="reset-btn">Reset example</button>
+      </div>
+    </div>
+    <div id="response-box" hidden>
+      <h3>Response</h3>
+      <pre class="table-scroll"><code id="response"></code></pre>
+    </div>
+
+    <h2>Response status codes</h2>
+    <div class="card table-scroll">
+      <table>
+        <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill input">200</span></td><td class="muted">Success — the body holds the computed situation (or the requested metadata).</td></tr>
+          <tr><td><span class="pill no">400</span></td><td class="muted">Malformed JSON, or a situation the engine can't parse.</td></tr>
+          <tr><td><span class="pill no">404</span></td><td class="muted">Unknown variable or parameter name in the path.</td></tr>
+          <tr><td><span class="pill no">422</span></td><td class="muted">Valid JSON but an invalid situation — e.g. an unknown enum value, a bad date, or a value at the wrong period.</td></tr>
+          <tr><td><span class="pill no">500</span></td><td class="muted">The engine hit an error while computing. Shouldn't happen for well-formed input; worth reporting if it does.</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-bottom:0">
+        Error bodies are JSON describing the problem; the tools here surface that text directly.
+      </p>
+    </div>
+
+    <h2>How the tools here use it</h2>
+    <div class="card">
+      <ul>
+        <li><strong>Calculators</strong> (<a href="calculator.html">PAYGI</a>,
+          <a href="objection-calculator.html">objection</a>,
+          <a href="cgt-calculator.html">CGT</a>) collect inputs, call
+          <code>POST api/calculate</code>, and show the answer with the <code>reference</code> URLs
+          of the variables involved as “why” links.</li>
+        <li><strong>Show the working</strong> (inside the PAYGI calculator) calls
+          <code>POST api/trace</code> to render the full dependency tree — the transparency layer a
+          chatbot cites to say <em>why</em>, not just <em>what</em>.</li>
+        <li>The <strong><a href="objection-calculator.html">objection calculator</a>'s eligibility
+          help</strong> batches one <code>calculate</code> across every decision type to generate its
+          catalogue live — nothing in it is hand-written tax content.</li>
+        <li>The <strong><a href="model.html">rules model</a></strong> and
+          <a href="maintain.html">maintenance tools</a> read <code>variables</code> and
+          <code>parameters</code> metadata so specialists can review the rules without reading Python.</li>
+      </ul>
+      <p class="muted">
+        Next phase: expose these same endpoints to an LLM as tools (direct HTTP tool-use or a small
+        MCP wrapper) so a chatbot converses to collect inputs, calls the engine for the decision,
+        and answers with the engine's references as citations — never computing eligibility itself.
+      </p>
+    </div>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Outputs are guidance to explore Rules as Code, not tax advice. The
+    engine serves the rules in <code>openfisca_rules/</code>; browse them in the
+    <a href="model.html">rules model</a>.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script>
+    const EXAMPLE_PAYLOAD = {
+      tax_entities: {
+        my_case: {
+          ato_decision_type: { "2024": "income_tax_assessment" },
+          decision_notice_date: { "2024": "2024-02-15" },
+          objection_lodgment_date: { "2024": "2024-03-01" },
+          taxpayer_kind: { "2024": "individual" },
+          has_objection_right: { "2024": null },
+          objection_deadline: { "2024": null },
+          objection_in_time: { "2024": null },
+          recommended_pathway: { "2024": null }
+        }
+      }
+    };
+
+    const ENDPOINTS = [
+      ['GET', 'spec', 'OpenAPI 3 description of every endpoint, generated from the loaded rules.', true],
+      ['GET', 'entities', 'The entity model — the roles variables are computed for.', true],
+      ['GET', 'variables', 'Index of every variable (inputs and rules) with its metadata URL.', true],
+      ['GET', 'variable/&lt;name&gt;', 'One variable: label, documentation, references and formula source.', false],
+      ['GET', 'parameters', 'Index of every dated policy parameter.', true],
+      ['GET', 'parameter/&lt;id&gt;', 'One parameter with its full dated value history.', false],
+      ['POST', 'calculate', 'Compute requested output variables for one or many entities.', false],
+      ['POST', 'trace', 'Like calculate, but also returns the dependency tree of each result.', false],
+    ];
+
+    // Full URL shown in the base-url block and code samples, for callers outside this page.
+    const ORIGIN = location.origin + location.pathname.replace(/[^/]*$/, '') + 'api';
+
+    buildEndpointTable();
+    document.getElementById('base-url').textContent = ORIGIN + '/';
+    buildCodeSamples();
+    loadCounts().catch((err) => showError(document.getElementById('error-box'), err));
+
+    const payload = document.getElementById('payload');
+    resetPayload();
+    document.getElementById('run-btn').addEventListener('click', runCall);
+    document.getElementById('reset-btn').addEventListener('click', resetPayload);
+
+    function resetPayload() {
+      payload.value = JSON.stringify(EXAMPLE_PAYLOAD, null, 2);
+    }
+
+    /* ------------------------------------------------------------- code samples */
+
+    function codeSamples() {
+      const bodyPretty = JSON.stringify(EXAMPLE_PAYLOAD, null, 2);
+      const url = `${ORIGIN}/calculate`;
+      return {
+        curl:
+`curl -X POST ${url} \\
+  -H 'Content-Type: application/json' \\
+  -d '${JSON.stringify(EXAMPLE_PAYLOAD)}'`,
+        python:
+`import requests
+
+situation = ${bodyPretty}
+
+r = requests.post("${url}", json=situation)
+r.raise_for_status()
+result = r.json()
+case = result["tax_entities"]["my_case"]
+print(case["has_objection_right"]["2024"])   # True / False
+print(case["objection_deadline"]["2024"])     # e.g. "2026-02-15"`,
+        js:
+`const situation = ${bodyPretty};
+
+const res = await fetch("${url}", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(situation),
+});
+const result = await res.json();
+const c = result.tax_entities.my_case;
+console.log(c.has_objection_right["2024"], c.objection_deadline["2024"]);`,
+      };
+    }
+
+    function buildCodeSamples() {
+      const samples = codeSamples();
+      const out = document.getElementById('code-sample');
+      const show = (lang) => { out.textContent = samples[lang]; };
+      show('curl');
+      document.querySelectorAll('#code-tabs .tab-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#code-tabs .tab-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          show(btn.dataset.lang);
+        });
+      });
+    }
+
+    function buildEndpointTable() {
+      const tbody = document.querySelector('#endpoints tbody');
+      tbody.replaceChildren(...ENDPOINTS.map(([method, path, desc, linkable]) => {
+        const cleanPath = path.replace('&lt;', '<').replace('&gt;', '>');
+        const pathCell = el('td', {});
+        if (linkable) {
+          pathCell.appendChild(el('a', { href: `api/${path}`, target: '_blank', rel: 'noopener' },
+            el('code', {}, `api/${cleanPath}`)));
+        } else {
+          pathCell.appendChild(el('code', {}, `api/${cleanPath}`));
+        }
+        return el('tr', {},
+          el('td', {}, el('span', { class: method === 'GET' ? 'pill input' : 'pill formula' }, method)),
+          pathCell,
+          el('td', { class: 'muted' }, desc));
+      }));
+    }
+
+    async function loadCounts() {
+      const [variables, parameters, entities] = await Promise.all([
+        apiGet('variables'), apiGet('parameters'), apiGet('entities'),
+      ]);
+      document.getElementById('c-variables').textContent = `${Object.keys(variables).length} variables`;
+      document.getElementById('c-parameters').textContent = `${Object.keys(parameters).length} parameters`;
+      const entityNames = Object.keys(entities);
+      document.getElementById('c-entities').textContent =
+        entityNames.length === 1 ? `1 entity · ${entityNames[0]}` : `${entityNames.length} entities`;
+    }
+
+    async function runCall() {
+      const box = document.getElementById('response-box');
+      const out = document.getElementById('response');
+      const errorBox = document.getElementById('error-box');
+      errorBox.replaceChildren();
+
+      let body;
+      try {
+        body = JSON.parse(payload.value);
+      } catch (err) {
+        showError(errorBox, new Error(`That is not valid JSON: ${err.message}`));
+        return;
+      }
+
+      out.textContent = 'Calling the engine…';
+      box.hidden = false;
+      try {
+        const res = await apiPost('calculate', body);
+        out.textContent = JSON.stringify(res, null, 2);
+      } catch (err) {
+        out.textContent = '';
+        showError(errorBox, err);
+        box.hidden = true;
+      }
+    }
+  </script>
+</body>
+</html>

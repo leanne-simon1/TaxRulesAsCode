@@ -1,0 +1,60 @@
+# Decision inventory rows 4-9 — GST and FBT assessments (4 years after notice), the
+# 60-day family (administrative penalty, superannuation guarantee charge), and excess
+# concessional contributions determinations (s 14ZW(1)(bg), (a), (aac) TAA 1953).
+
+- name: GST and FBT assessments - 4 years after notice, regardless of taxpayer kind
+  period: 2025
+  input:
+    ato_decision_type: [gst_assessment, fbt_assessment]
+    taxpayer_kind: [individual, individual]
+    decision_notice_date: [2025-01-31, 2025-05-28]
+    objection_lodgment_date: [2029-01-31, 2029-05-29]
+  output:
+    has_objection_right: [true, true]
+    objection_deadline: [2029-01-31, 2029-05-28]
+    objection_in_time: [true, false]
+    can_request_extension: [false, true]
+    recommended_pathway: [lodge_objection, objection_with_extension_request]
+
+- name: 60-day family - penalty and super guarantee assessments
+  period: 2025
+  input:
+    ato_decision_type: [penalty_assessment, super_guarantee_assessment]
+    decision_notice_date: [2025-01-01, 2025-01-01]
+    objection_lodgment_date: [2025-03-02, 2025-03-03]
+  output:
+    has_objection_right: [true, true]
+    objection_deadline: [2025-03-02, 2025-03-02]
+    objection_in_time: [true, false]
+    can_request_extension: [false, true]
+    recommended_pathway: [lodge_objection, objection_with_extension_request]
+
+- name: excess concessional contributions determination - deadline tracks the related income tax assessment, not the determination's own notice date
+  period: 2025
+  input:
+    ato_decision_type: [excess_concessional_contributions_determination, excess_concessional_contributions_determination]
+    taxpayer_kind: [individual, other]
+    decision_notice_date: [2025-11-01, 2025-11-01]              # determination given - irrelevant to the deadline
+    related_assessment_notice_date: [2024-10-01, 2022-10-01]    # related income tax assessment notice
+    objection_lodgment_date: [2026-10-01, 2026-10-01]
+  output:
+    has_objection_right: [true, true]
+    objection_deadline: [2026-10-01, 2026-10-01]                # individual: +2y; other: +4y
+    objection_in_time: [true, true]
+    can_request_extension: [false, false]
+    recommended_pathway: [lodge_objection, lodge_objection]
+
+- name: excess concessional contributions determination - late objection can request extension
+  period: 2025
+  input:
+    ato_decision_type: excess_concessional_contributions_determination
+    taxpayer_kind: individual
+    decision_notice_date: 2025-11-01
+    related_assessment_notice_date: 2024-10-01
+    objection_lodgment_date: 2026-10-02
+  output:
+    has_objection_right: true
+    objection_deadline: 2026-10-01
+    objection_in_time: false
+    can_request_extension: true
+    recommended_pathway: objection_with_extension_request

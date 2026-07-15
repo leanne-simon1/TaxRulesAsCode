@@ -1,0 +1,26 @@
+# Self-hosting compose file (home server) — no Lagoon/pygmy/amazee.io needed.
+#
+#   docker compose -f docker-compose.home.yml up -d --build
+#
+# Exposes the showcase webapp + rules API on host port 8850.
+# See DEPLOY.md for the HAProxy path-prefix setup.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: .docker/home.dockerfile
+    restart: unless-stopped
+    expose:
+      - "5000"
+
+  web:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./webapp:/usr/share/nginx/html:ro
+      - ./.docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8850:80"
+    depends_on:
+      - api

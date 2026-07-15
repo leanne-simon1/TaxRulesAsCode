@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rules explorer — live from the engine</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Rules explorer</h1>
+    <p class="lede">
+      Everything on this page is read live from the rules engine's metadata API — labels, plain
+      language documentation, legislative references, formula code and dated policy parameters.
+      Nothing is hard-coded here, so this view can never drift from the rules that actually run.
+      This is the view a tax technical specialist can check without reading Python.
+    </p>
+
+    <div id="error-box"></div>
+
+    <h2>Policy parameters <span class="pill">dated values — editable without code</span></h2>
+    <p class="muted">
+      Values that change over time (rates, thresholds and, later, objection time limits) live in
+      YAML parameter files with a start date per value. Updating policy means adding a dated row —
+      no formula changes, and CI tests still gate the change.
+    </p>
+    <div id="parameters" class="card table-scroll"><p class="loading">Loading parameters…</p></div>
+
+    <h2>Input variables <span class="pill input">provided by the user or software</span></h2>
+    <div id="inputs"><p class="loading">Loading…</p></div>
+
+    <h2>Calculated variables <span class="pill formula">rules with formulas</span></h2>
+    <div id="calculated"><p class="loading">Loading…</p></div>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Outputs are guidance to explore Rules as Code, not tax advice.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script>
+    load().catch((err) => showError(document.getElementById('error-box'), err));
+
+    async function load() {
+      await Promise.all([loadParameters(), loadVariables()]);
+    }
+
+    async function loadParameters() {
+      const listing = await apiGet('parameters');
+      const ids = Object.values(listing).map((p) => {
+        const href = p.href || '';
+        return href.substring(href.lastIndexOf('/parameter/') + '/parameter/'.length);
+      }).filter(Boolean);
+      const params = await Promise.all(ids.map((id) => apiGet(`parameter/${id}`)));
+
+      const rows = [];
+      for (const p of params) {
+        const values = Object.entries(p.values || {}).sort((a, b) => b[0].localeCompare(a[0]));
+        values.forEach(([date, value], i) => {
+          rows.push(el('tr', {},
+            i === 0 ? el('td', { rowspan: String(values.length) },
+              el('code', {}, p.id), el('div', { class: 'muted' }, p.description || '')) : null,
+            el('td', {}, `from ${date}`),
+            el('td', { class: 'num' }, String(value))));
+        });
+      }
+      document.getElementById('parameters').replaceChildren(el('table', {},
+        el('thead', {}, el('tr', {},
+          el('th', {}, 'Parameter'), el('th', {}, 'Effective'), el('th', { class: 'num' }, 'Value'))),
+        el('tbody', {}, rows)));
+    }
+
+    async function loadVariables() {
+      const listing = await apiGet('variables');
+      const names = Object.keys(listing).sort();
+      const metas = await Promise.all(names.map(variableMeta));
+
+      const inputsBox = document.getElementById('inputs');
+      const calcBox = document.getElementById('calculated');
+      inputsBox.replaceChildren();
+      calcBox.replaceChildren();
+
+      for (const meta of metas) {
+        const hasFormula = meta.formulas && Object.keys(meta.formulas).length > 0;
+        (hasFormula ? calcBox : inputsBox).appendChild(renderVariable(meta, hasFormula));
+      }
+    }
+
+    function renderVariable(meta, hasFormula) {
+      const card = el('div', { class: 'card', id: meta.id });
+      card.appendChild(el('h3', {},
+        meta.description || meta.id, ' ',
+        el('code', {}, meta.id)));
+      card.appendChild(el('p', { class: 'muted' },
+        `${meta.valueType} · per ${String(meta.definitionPeriod).toLowerCase()} · entity: ${meta.entity}`));
+      if (meta.documentation) {
+        card.appendChild(el('p', { class: 'doc', style: 'white-space: pre-line' }, meta.documentation.trim()));
+      }
+      if (meta.references && meta.references.length) {
+        card.appendChild(el('p', { class: 'refs' }, 'Reference: ', referenceLinks(meta.references)));
+      }
+      if (hasFormula) {
+        for (const [since, f] of Object.entries(meta.formulas)) {
+          if (!f || !f.content) continue;
+          const pre = el('pre', {}, el('code', {}, f.content));
+          const label = since === '0001-01-01' ? 'View formula' : `View formula (from ${since})`;
+          card.appendChild(el('details', {}, el('summary', {}, label), pre));
+        }
+      }
+      return card;
+    }
+  </script>
+</body>
+</html>

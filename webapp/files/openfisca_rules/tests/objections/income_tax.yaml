@@ -1,0 +1,43 @@
+# Decision inventory row 1 — original income tax assessments (s 175A ITAA 1936;
+# s 14ZW(1)(aa) TAA 1953): 2 years for taxpayers on the standard amendment period
+# (individuals, small business entities), 4 years otherwise. Boundary cases: lodgment
+# on the deadline day is in time, the day after is late (extension request possible).
+
+- name: individual gets 2 years from notice; deadline day in time, day after late
+  period: 2025
+  input:
+    ato_decision_type: [income_tax_assessment, income_tax_assessment]
+    taxpayer_kind: [individual, individual]
+    decision_notice_date: [2025-06-30, 2025-06-30]
+    objection_lodgment_date: [2027-06-30, 2027-07-01]
+  output:
+    has_standard_amendment_period: [true, true]
+    has_objection_right: [true, true]
+    objection_deadline: [2027-06-30, 2027-06-30]
+    objection_in_time: [true, false]
+    can_request_extension: [false, true]
+    recommended_pathway: [lodge_objection, objection_with_extension_request]
+
+- name: small business entity also gets 2 years; other entities get 4 years
+  period: 2025
+  input:
+    ato_decision_type: [income_tax_assessment, income_tax_assessment]
+    taxpayer_kind: [small_business_entity, other]
+    decision_notice_date: [2025-06-30, 2025-06-30]
+    objection_lodgment_date: [2027-06-30, 2029-06-30]
+  output:
+    has_standard_amendment_period: [true, false]
+    objection_deadline: [2027-06-30, 2029-06-30]
+    objection_in_time: [true, true]
+    recommended_pathway: [lodge_objection, lodge_objection]
+
+- name: notice given on 29 February - anniversary falls back to 28 February
+  period: 2025
+  input:
+    ato_decision_type: income_tax_assessment
+    taxpayer_kind: individual
+    decision_notice_date: 2024-02-29
+    objection_lodgment_date: 2026-02-28
+  output:
+    objection_deadline: 2026-02-28
+    objection_in_time: true

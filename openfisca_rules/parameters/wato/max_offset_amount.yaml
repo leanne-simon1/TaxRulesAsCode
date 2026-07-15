@@ -1,0 +1,7 @@
+description: Maximum amount of the Working Australians Tax Offset - the fixed dollar cap in s 61-160(a) ITAA 1997 (the offset is the lesser of this and basic tax on net labour income alone). Applies to assessments for the 2027-28 income year and later.
+metadata:
+  unit: currency-AUD
+  reference: https://www.legislation.gov.au/C2026A00049/asmade/text
+values:
+  2027-07-01:
+    value: 250

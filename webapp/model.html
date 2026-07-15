@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rules model — browse every rule and parameter</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main class="wide">
+    <h1>The rules model</h1>
+    <p class="lede">
+      Browse everything the engine encodes, folder by folder — each ruleset, its dated policy
+      parameters, the inputs it needs and the rules it computes. Pick a policy parameter to see how
+      its value has changed over time; pick a rule to see its formula, legislative references and
+      what it depends on. Read live from the engine's metadata, so it can never drift from the rules
+      that actually run.
+    </p>
+
+    <div id="error-box"></div>
+
+    <div class="model">
+      <aside class="model-nav" id="tree"><p class="loading">Loading the model…</p></aside>
+      <section class="model-detail" id="detail"><p class="loading">Loading…</p></section>
+    </div>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Outputs are guidance to explore Rules as Code, not tax advice. Every rule
+    and value here is served from <code>openfisca_rules/</code> via the engine's metadata API.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script src="assets/model.js"></script>
+</body>
+</html>

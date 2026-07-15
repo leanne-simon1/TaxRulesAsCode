@@ -1,0 +1,7 @@
+description: Standard objection period in days (s 14ZW(1) TAA 1953) - penalty assessments, super guarantee assessments, objectable SIC remission decisions, and the short limb of the amended-assessment and private-ruling "later of" rules
+metadata:
+  unit: day
+  reference: https://www.legislation.gov.au/C1953A00001/latest/text#s14ZW
+values:
+  1992-03-01:
+    value: 60

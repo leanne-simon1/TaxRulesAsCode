@@ -1,0 +1,7 @@
+description: Minimum holding period for the CGT discount and (from 1 July 2027) indexation - the asset must be acquired at least 12 months before the CGT event (s 115-25 ITAA 1997). Modelled as 365 days; the exact day-counting at the 12-month boundary is a documented caveat pending tax-specialist review.
+metadata:
+  unit: day
+  reference: https://www.legislation.gov.au/C2004A05138/latest/text#s115-25
+values:
+  1999-09-21:
+    value: 365

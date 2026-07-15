@@ -1,0 +1,7 @@
+description: Division 43 capital works deduction rate for the standard modern case - construction begun after 26 February 1992 (s 43-25 ITAA 1997). This ruleset does not model the earlier 4%/25-year band.
+metadata:
+  unit: /1
+  reference: https://www.legislation.gov.au/C2004A05138/latest/text#s43-25
+values:
+  1992-02-27:
+    value: 0.025

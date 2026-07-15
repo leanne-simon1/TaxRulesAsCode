@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Working Australians Tax Offset — the $250 WATO from 2027-28</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="index.html">Tax <span>Rules as Code</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="calculator.html">PAYGI calculator</a>
+      <a href="objection-calculator.html">Objection calculator</a>
+      <a href="eot.html">EOT sense check</a>
+      <a href="cgt-calculator.html">CGT calculator</a>
+      <a href="negative-gearing.html">Negative gearing</a>
+      <a href="wato.html">Worker offset</a>
+      <a href="model.html">Rules</a>
+      <a href="engine.html">API</a>
+      <a href="maintain.html">Maintain rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Working Australians Tax Offset — the $250 WATO</h1>
+    <p class="lede">
+      Three ways to use one ruleset. From the <strong>2027-28 income year</strong>, an individual
+      who is an Australian resident and whose <strong>net labour income</strong> (income from work,
+      less the deductions that relate to it) exceeds the $18,200 tax-free threshold gets a tax
+      offset of <strong>up to $250</strong> — phasing in at 14 cents per dollar above the
+      threshold. Everything below is computed live by the rules engine from
+      <a href="rulesets/Working%20Australians%20Tax%20Offset%20Ruleset.md">Working Australians Tax
+      Offset Ruleset.md</a>; this page only asks and displays.
+    </p>
+    <div class="notice no-print">
+      <strong>Enacted, not yet commenced:</strong> the WATO (Treasury Laws Amendment (Tax Reform
+      No.&nbsp;1) Act 2026, Schedule 3 — new Subdivision&nbsp;61-E ITAA 1997) applies to
+      assessments for the 2027-28 income year and later. It is <strong>non-refundable</strong> and
+      applied automatically when your return is assessed — there is nothing to claim.
+    </div>
+
+    <div id="error-box"></div>
+
+    <!-- ================================================= 1 · eligibility questionnaire -->
+    <h2 id="eligibility">1 · Am I eligible? — a question at a time</h2>
+    <p class="muted">
+      The decision-tree way to use the ruleset: answer one question at a time, then the engine —
+      not this page — decides against the four s&nbsp;61-155(1) entitlement gates and cites the
+      legislation behind each one.
+    </p>
+    <div class="card" id="quiz"></div>
+
+    <!-- ================================================= 2 · calculator + phase-in chart -->
+    <h2 id="calculator">2 · How much? — the offset and its phase-in curve</h2>
+    <p class="muted">
+      The calculator way: enter your work income and the engine returns your net labour income and
+      offset. The curve underneath is <strong>not drawn from a formula in this page</strong> — it
+      is a single batched <code>/calculate</code> call sweeping forty-one incomes through the
+      engine, so the kinks fall exactly where the legislation puts them.
+    </p>
+    <div class="card">
+      <form class="inputs" onsubmit="return false">
+        <div class="field">
+          <label for="calc-year">Income year</label>
+          <select id="calc-year"></select>
+          <p class="help">The offset commences in 2027-28 — pick an earlier year and the engine will say so.</p>
+        </div>
+        <div class="field">
+          <label for="calc-income">Income from work for the year (A$)</label>
+          <input type="number" id="calc-income" min="0" step="100" value="19000">
+          <p class="help">Salary and wages, sole-trader income, personal services income, ESS discounts, labour-hire payments — use the questionnaire above to itemise the five statutory components.</p>
+        </div>
+        <div class="field">
+          <label for="calc-deductions">Deductions attributable to that work (A$)</label>
+          <input type="number" id="calc-deductions" min="0" step="50" value="0">
+          <p class="help">Including the $1,000 instant deduction if you use it.</p>
+        </div>
+      </form>
+      <div class="actions">
+        <button type="button" id="calc-btn">Calculate the offset</button>
+      </div>
+    </div>
+    <section id="calc-results" hidden>
+      <div class="results-grid" id="calc-cards"></div>
+      <div class="card">
+        <h3 style="margin-top:0">The phase-in curve — every point an engine answer</h3>
+        <div id="phase-chart"></div>
+      </div>
+      <details class="help-section"><summary>Why? — the rules behind these numbers</summary>
+        <div class="help-body" id="calc-why"><p class="loading">Loading rule references…</p></div>
+      </details>
+    </section>
+
+    <!-- ================================================= 3 · show the working -->
+    <h2 id="trace-section">3 · Show the working — the engine's own trace</h2>
+    <p class="muted">
+      The transparency way: the engine's <code>/trace</code> endpoint replays the calculation as a
+      tree — every rule that fired, the values it used, and the dated policy parameters applied
+      ($250 cap, $18,200 threshold, the 14% rate scale). This is the calculation path a Phase 4
+      chatbot would quote back, and it uses whatever facts you entered in tool 1 or 2 above.
+    </p>
+    <div class="card">
+      <div class="actions" style="margin-top:0">
+        <button type="button" id="trace-btn">Trace the current facts</button>
+      </div>
+      <div class="trace" id="trace"></div>
+    </div>
+  </main>
+
+  <footer class="site">
+    Proof of concept only. Guidance for exploring Rules as Code, not tax advice. The engine models
+    the ruleset's documented simplifications — labour deductions as one aggregate amount, and the
+    s&nbsp;61-160(b) hypothetical computed with the resident basic rate scale (no Medicare levy, no
+    other offsets). See
+    <a href="rulesets/Working%20Australians%20Tax%20Offset%20Ruleset.md">Working Australians Tax
+    Offset Ruleset.md</a>.
+  </footer>
+
+  <script src="assets/app.js"></script>
+  <script src="assets/wato.js"></script>
+</body>
+</html>

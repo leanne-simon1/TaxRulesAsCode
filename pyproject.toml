@@ -1,0 +1,19 @@
+[project]
+name = "openfisca-rules"
+version = "0.1.0"
+description = "Tax Rules as Code — ATO RaC PoC rules package (PAYGI variation calculation, objection rights to follow)"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "openfisca-core[web-api] >=43, <45",
+]
+
+[build-system]
+requires = ["setuptools >= 61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["openfisca_rules*"]
+
+[tool.setuptools.package-data]
+openfisca_rules = ["parameters/**/*.yaml", "tests/**/*.yaml", "situation_examples/*.json"]
