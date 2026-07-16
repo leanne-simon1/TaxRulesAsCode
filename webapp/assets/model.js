@@ -36,6 +36,12 @@ const RULESETS = {
     blurb: 'Whether an ATO decision carries an objection (review) right and by when — the ' +
            'Part IVC TAA 1953 framework encoded from the Objection Rights Ruleset.',
   },
+  extension_of_time: {
+    label: 'Extension of time (s 14ZX)',
+    blurb: 'The s 14ZX sense-check: deterministic gatekeepers, delay-band arithmetic and a ' +
+           'structured factor record for the extension-of-time discretion — the discretionary ' +
+           'outcome itself is deliberately not encoded. From the Extension of Time Ruleset.',
+  },
   cgt: {
     label: 'Capital gains tax',
     blurb: 'CGT on a disposal under current law and the enacted 1 July 2027 reform ' +
@@ -93,16 +99,22 @@ function rulesetOfVar(name) {
   return m && RULESETS[m[1]] ? m[1] : 'payg';
 }
 
+/* Parameter id prefixes that don't match their variable module's filename. */
+const PARAM_PREFIX_ALIAS = { eot: 'extension_of_time' };
+
 function rulesetOfParam(id) {
-  const key = id.split('.')[0];
+  const key = PARAM_PREFIX_ALIAS[id.split('.')[0]] || id.split('.')[0];
   return RULESETS[key] ? key : 'payg';   // unprefixed params (corporate_tax_rate) belong to PAYG
 }
 
 /* Segments of a parameter id below its ruleset, e.g.
  *   cgt.discount_percentage.individual -> ['discount_percentage','individual']
+ *   eot.long_delay_min_days            -> ['long_delay_min_days']  (aliased prefix)
  *   corporate_tax_rate                 -> ['corporate_tax_rate'] */
 function paramSegments(key, id) {
-  return id.startsWith(key + '.') ? id.slice(key.length + 1).split('.') : [id];
+  const prefix = id.split('.')[0];
+  const prefixMapsToKey = prefix === key || PARAM_PREFIX_ALIAS[prefix] === key;
+  return prefixMapsToKey ? id.slice(prefix.length + 1).split('.') : [id];
 }
 
 function formulaText(m) {
