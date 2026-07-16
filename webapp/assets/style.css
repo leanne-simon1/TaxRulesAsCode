@@ -145,7 +145,7 @@ button.secondary, .button.secondary {
 }
 button.secondary:hover, .button.secondary:hover { background: var(--accent); color: var(--accent-text); }
 
-form.inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 0.9rem 1.5rem; }
+.inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 0.9rem 1.5rem; }
 
 .field label { display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 0.3rem; }
 
@@ -527,6 +527,51 @@ pre code .cmt { color: var(--muted); font-style: italic; }
   border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text);
 }
 .chat-input input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* EOT three-stage layout (eot.html) — the same numbered/coloured stage badge
+   threads through the input form and the result headings so the "engine
+   decides / records / sense-checks" boundary reads as one shape throughout. */
+.eot-stage-1 { --stage-color: var(--accent); }
+.eot-stage-2 { --stage-color: var(--warn); }
+.eot-stage-3 { --stage-color: var(--good); }
+
+.eot-stage-num {
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1rem;
+  background: color-mix(in srgb, var(--stage-color, var(--accent)) 16%, var(--surface));
+  color: var(--stage-color, var(--accent));
+  border: 1.5px solid var(--stage-color, var(--accent));
+}
+
+form .eot-stage { padding: 1.15rem 0; border-top: 1px solid var(--line); }
+form .eot-stage:first-child { padding-top: 0; border-top: none; }
+.eot-stage-head { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.9rem; }
+.eot-stage-title h3 { margin: 0 0 0.15rem; }
+.eot-stage-role {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--stage-color, var(--accent));
+}
+
+h2.eot-stage-h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--stage-color, var(--accent));
+}
+h2.eot-stage-h2 .eot-stage-num { width: 1.6rem; height: 1.6rem; font-size: 0.9rem; }
 
 /* EOT sense-check flags (eot.html) */
 .notice.flag-danger {

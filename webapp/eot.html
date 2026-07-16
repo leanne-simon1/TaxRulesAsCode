@@ -91,110 +91,140 @@
 
     <h2>Sense-check a decision</h2>
     <div class="card">
-      <form class="inputs" id="input-form">
-        <h3>Stage 1 — the deterministic shell (engine decides)</h3>
-        <div class="field">
-          <label for="decisionType">What decision was the late objection against?</label>
-          <select id="decisionType"></select>
-        </div>
-        <div class="field" id="f-noticeDate">
-          <label for="noticeDate">Date on the notice of the decision</label>
-          <input type="date" id="noticeDate">
-          <p class="help" id="noticeDate-help">The date the notice was given to the taxpayer.</p>
-        </div>
-        <div class="field">
-          <label for="lodgmentDate">Date the objection was lodged</label>
-          <input type="date" id="lodgmentDate">
-        </div>
-        <div class="field" id="f-taxpayerKind" hidden>
-          <label for="taxpayerKind">Kind of taxpayer</label>
-          <select id="taxpayerKind">
-            <option value="individual">Individual</option>
-            <option value="small_business_entity">Small business entity</option>
-            <option value="other">Other (company, trust, partnership outside the SBE rules, super fund, ...)</option>
-          </select>
-          <p class="help">Drives the 2-year vs 4-year objection period (s 170(1) ITAA 1936 items 1-3A).</p>
-        </div>
-        <div class="field" id="f-originalNoticeDate" hidden>
-          <label for="originalNoticeDate">Date on the notice of the ORIGINAL assessment</label>
-          <input type="date" id="originalNoticeDate">
-        </div>
-        <div class="field" id="f-hasAssessment" hidden>
-          <label for="hasAssessment">Assessment already made for the ruling period?</label>
-          <select id="hasAssessment">
-            <option value="false">No</option>
-            <option value="true">Yes</option>
-          </select>
-        </div>
-        <div class="field" id="f-returnDueDate" hidden>
-          <label for="returnDueDate">Last day allowed for lodging the return the ruling relates to</label>
-          <input type="date" id="returnDueDate">
-        </div>
-        <div class="field" id="f-relatedNoticeDate" hidden>
-          <label for="relatedNoticeDate">Date on the notice of the related income tax assessment</label>
-          <input type="date" id="relatedNoticeDate">
-        </div>
-        <div class="field" id="f-sicFraction" hidden>
-          <label for="sicFraction">Unremitted SIC as a percentage of the tax shortfall</label>
-          <input type="number" id="sicFraction" min="0" max="100" step="0.1" value="25">
-        </div>
-        <div class="field">
-          <label for="reqWriting">Was a WRITTEN extension request lodged with the objection? (s&nbsp;14ZW(2))</label>
-          <select id="reqWriting">
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="reqFully">Does it state the circumstances of the lateness FULLY AND IN DETAIL? (s&nbsp;14ZW(3))</label>
-          <select id="reqFully">
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
+      <form id="input-form">
+        <section class="eot-stage eot-stage-1">
+          <header class="eot-stage-head">
+            <span class="eot-stage-num">1</span>
+            <div class="eot-stage-title">
+              <h3>The deterministic shell</h3>
+              <span class="eot-stage-role">Engine decides</span>
+            </div>
+          </header>
+          <div class="inputs">
+            <div class="field">
+              <label for="decisionType">What decision was the late objection against?</label>
+              <select id="decisionType"></select>
+            </div>
+            <div class="field" id="f-noticeDate">
+              <label for="noticeDate">Date on the notice of the decision</label>
+              <input type="date" id="noticeDate">
+              <p class="help" id="noticeDate-help">The date the notice was given to the taxpayer.</p>
+            </div>
+            <div class="field">
+              <label for="lodgmentDate">Date the objection was lodged</label>
+              <input type="date" id="lodgmentDate">
+            </div>
+            <div class="field" id="f-taxpayerKind" hidden>
+              <label for="taxpayerKind">Kind of taxpayer</label>
+              <select id="taxpayerKind">
+                <option value="individual">Individual</option>
+                <option value="small_business_entity">Small business entity</option>
+                <option value="other">Other (company, trust, partnership outside the SBE rules, super fund, ...)</option>
+              </select>
+              <p class="help">Drives the 2-year vs 4-year objection period (s 170(1) ITAA 1936 items 1-3A).</p>
+            </div>
+            <div class="field" id="f-originalNoticeDate" hidden>
+              <label for="originalNoticeDate">Date on the notice of the ORIGINAL assessment</label>
+              <input type="date" id="originalNoticeDate">
+            </div>
+            <div class="field" id="f-hasAssessment" hidden>
+              <label for="hasAssessment">Assessment already made for the ruling period?</label>
+              <select id="hasAssessment">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </select>
+            </div>
+            <div class="field" id="f-returnDueDate" hidden>
+              <label for="returnDueDate">Last day allowed for lodging the return the ruling relates to</label>
+              <input type="date" id="returnDueDate">
+            </div>
+            <div class="field" id="f-relatedNoticeDate" hidden>
+              <label for="relatedNoticeDate">Date on the notice of the related income tax assessment</label>
+              <input type="date" id="relatedNoticeDate">
+            </div>
+            <div class="field" id="f-sicFraction" hidden>
+              <label for="sicFraction">Unremitted SIC as a percentage of the tax shortfall</label>
+              <input type="number" id="sicFraction" min="0" max="100" step="0.1" value="25">
+            </div>
+            <div class="field">
+              <label for="reqWriting">Was a WRITTEN extension request lodged with the objection? (s&nbsp;14ZW(2))</label>
+              <select id="reqWriting">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="reqFully">Does it state the circumstances of the lateness FULLY AND IN DETAIL? (s&nbsp;14ZW(3))</label>
+              <select id="reqFully">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+              <p class="help">
+                If No, the request is still validly before the Commissioner — the engine raises the
+                PS&nbsp;LA&nbsp;2003/7 [6] prompt to invite further information instead (it can never be
+                the sole ground of refusal).
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="eot-stage eot-stage-2">
+          <header class="eot-stage-head">
+            <span class="eot-stage-num">2</span>
+            <div class="eot-stage-title">
+              <h3>The factor record</h3>
+              <span class="eot-stage-role">Human findings — engine records and cites</span>
+            </div>
+          </header>
           <p class="help">
-            If No, the request is still validly before the Commissioner — the engine raises the
-            PS&nbsp;LA&nbsp;2003/7 [6] prompt to invite further information instead (it can never be
-            the sole ground of refusal).
+            These are the decision maker's findings under PS LA 2003/7 — the engine records and
+            cites them; it never infers them.
           </p>
-        </div>
+          <div class="inputs">
+            <div class="field">
+              <label for="fExplains">Does the explanation genuinely account for the WHOLE period of delay?</label>
+              <select id="fExplains"><option value="true">Yes</option><option value="false" selected>No</option></select>
+            </div>
+            <div class="field">
+              <label for="fArguable">Is the objection arguable (not frivolous, not bound to fail in law)?</label>
+              <select id="fArguable"><option value="true">Yes</option><option value="false" selected>No</option></select>
+              <p class="help">A low bar — no full merits investigation.</p>
+            </div>
+            <div class="field">
+              <label for="fPrejudice">Is concrete prejudice to the Commissioner identified?</label>
+              <select id="fPrejudice"><option value="true">Yes</option><option value="false" selected>No</option></select>
+              <p class="help">Administrative inconvenience is not prejudice.</p>
+            </div>
+            <div class="field">
+              <label for="fAtoConduct">Did ATO conduct (action or inaction) contribute to the delay?</label>
+              <select id="fAtoConduct"><option value="true">Yes</option><option value="false" selected>No</option></select>
+            </div>
+            <div class="field">
+              <label for="fRested">Did the taxpayer rest on their rights while time ran?</label>
+              <select id="fRested"><option value="true">Yes</option><option value="false" selected>No</option></select>
+            </div>
+          </div>
+        </section>
 
-        <h3>Stage 2 — the factor record (human findings, engine-recorded)</h3>
-        <p class="help">
-          These are the decision maker's findings under PS LA 2003/7 — the engine records and
-          cites them; it never infers them.
-        </p>
-        <div class="field">
-          <label for="fExplains">Does the explanation genuinely account for the WHOLE period of delay?</label>
-          <select id="fExplains"><option value="true">Yes</option><option value="false" selected>No</option></select>
-        </div>
-        <div class="field">
-          <label for="fArguable">Is the objection arguable (not frivolous, not bound to fail in law)?</label>
-          <select id="fArguable"><option value="true">Yes</option><option value="false" selected>No</option></select>
-          <p class="help">A low bar — no full merits investigation.</p>
-        </div>
-        <div class="field">
-          <label for="fPrejudice">Is concrete prejudice to the Commissioner identified?</label>
-          <select id="fPrejudice"><option value="true">Yes</option><option value="false" selected>No</option></select>
-          <p class="help">Administrative inconvenience is not prejudice.</p>
-        </div>
-        <div class="field">
-          <label for="fAtoConduct">Did ATO conduct (action or inaction) contribute to the delay?</label>
-          <select id="fAtoConduct"><option value="true">Yes</option><option value="false" selected>No</option></select>
-        </div>
-        <div class="field">
-          <label for="fRested">Did the taxpayer rest on their rights while time ran?</label>
-          <select id="fRested"><option value="true">Yes</option><option value="false" selected>No</option></select>
-        </div>
-
-        <h3>Stage 3 — the proposed decision (sense-checked, never made, by the engine)</h3>
-        <div class="field">
-          <label for="proposedOutcome">Proposed s&nbsp;14ZX outcome</label>
-          <select id="proposedOutcome">
-            <option value="undecided">Undecided — no sense check yet</option>
-            <option value="agree">Agree — treat the objection as lodged in time</option>
-            <option value="refuse">Refuse the request</option>
-          </select>
-        </div>
+        <section class="eot-stage eot-stage-3">
+          <header class="eot-stage-head">
+            <span class="eot-stage-num">3</span>
+            <div class="eot-stage-title">
+              <h3>The proposed decision</h3>
+              <span class="eot-stage-role">Sense-checked, never made, by the engine</span>
+            </div>
+          </header>
+          <div class="inputs">
+            <div class="field">
+              <label for="proposedOutcome">Proposed s&nbsp;14ZX outcome</label>
+              <select id="proposedOutcome">
+                <option value="undecided">Undecided — no sense check yet</option>
+                <option value="agree">Agree — treat the objection as lodged in time</option>
+                <option value="refuse">Refuse the request</option>
+              </select>
+            </div>
+          </div>
+        </section>
       </form>
       <div class="actions">
         <button type="button" id="calc-btn">Sense-check with the rules engine</button>
@@ -204,12 +234,10 @@
     <div id="error-box"></div>
 
     <section id="results" hidden>
-      <h2>Engine result</h2>
+      <h2 class="eot-stage-h2 eot-stage-1"><span class="eot-stage-num">1</span> The deterministic shell — result</h2>
       <div class="results-grid" id="stat-cards"></div>
 
-      <div id="flag-box"></div>
-
-      <h2>The factor record (what a Copilot cites)</h2>
+      <h2 class="eot-stage-h2 eot-stage-2"><span class="eot-stage-num">2</span> The factor record — what a Copilot cites</h2>
       <p class="muted">
         The structured record the engine hands to any AI assistant: each finding, with the
         governed citation behind it — instead of the assistant's "general legal knowledge".
@@ -221,7 +249,9 @@
         </table>
       </div>
 
-      <h2>What the engine deliberately does not answer</h2>
+      <h2 class="eot-stage-h2 eot-stage-3"><span class="eot-stage-num">3</span> The proposed decision — sense check</h2>
+      <div id="flag-box"></div>
+
       <div class="card">
         <p>
           There is <strong>no variable</strong> in the engine for whether the request should be
