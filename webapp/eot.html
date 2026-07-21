@@ -28,62 +28,70 @@
   </header>
 
   <main>
-    <h1>Extension of time to object (s&nbsp;14ZX) — decision sense check</h1>
+    <h1>Late objection — extension of time (s&nbsp;14ZX) sense check</h1>
     <p class="lede">
-      The s&nbsp;14ZX discretion — whether to accept a late objection — is a <strong>judgement-based
-      decision</strong>: a human weighs the factors, and no rules engine (or AI) should make it.
-      But the discretion sits inside a deterministic legal shell, and this page shows the rules
-      engine holding exactly that line: the engine <strong>decides</strong> the gatekeepers
-      (is the request even validly before the Commissioner?), <strong>calculates</strong> the delay,
-      <strong>records</strong> the officer's factor findings with legislative citations, and
-      <strong>sense-checks</strong> a proposed outcome against decided-case patterns — while the
-      grant/refuse call itself has <em>no variable in the engine at all</em>. This is the grounding
-      a Copilot-style assistant needs: it can call these rules instead of free-generating law.
+      When someone objects to a tax decision after the deadline has passed, they can ask the
+      Commissioner for extra time under section&nbsp;14ZX. <strong>Deciding whether to grant that
+      extra time is a judgement call</strong> — you weigh up the person's circumstances, and no
+      computer (or AI) should make that call for you. This tool does not decide it either. What it
+      does is take care of the firm legal checks that sit <em>around</em> that judgement, so you can
+      focus on the judgement itself. It:
     </p>
+    <ul class="lede-list">
+      <li><strong>Works out whether the objection really was late</strong> — if it was in time, there
+        is nothing to extend and you don't need to decide the request at all.</li>
+      <li><strong>Calculates how late it was</strong>, from the dates you enter.</li>
+      <li><strong>Records your findings</strong> on each of the things the law asks you to weigh, with
+        a reference to where each one comes from.</li>
+      <li><strong>Sense-checks the decision you're leaning towards</strong> against patterns in decided
+        cases, and raises a flag if something looks unusual — so you can make sure your written reasons
+        deal with it. The flag never changes your decision.</li>
+    </ul>
 
     <div class="notice">
-      <strong>Who this is for.</strong> Unlike the objection calculator (a taxpayer view), this is
-      an <strong>officer / reviewer view</strong>: it assumes a late objection with an extension
-      request is on the desk and a decision is being drafted. Ruleset:
+      <strong>Who this is for.</strong> This is a view for the case officer or reviewer, not the
+      taxpayer. It assumes a late objection with a request for extra time has landed on your desk
+      and you are drafting the decision. The plain-language rules behind it are in the
       <a href="rulesets/Extension%20of%20Time%20Ruleset.md">Extension of Time Ruleset.md</a> (DRAFT,
       pending tax specialist review).
     </div>
 
-    <h2>Three worked examples</h2>
+    <h2>Try it with three worked examples</h2>
     <p class="muted">
-      Each button fills the form below with a scenario and asks the live engine. The three
-      examples demonstrate the three tiers of value: a hard jurisdictional catch, an
-      atypical-refusal prompt, and an atypical-grant prompt.
+      Each button fills in the form below with a ready-made scenario and runs the check, so you can
+      see the kinds of things the tool picks up. They cover the three situations it is most useful
+      for: catching a request that shouldn't be decided at all, questioning a refusal that looks
+      harsh, and questioning a grant that looks generous.
     </p>
     <div class="tool-grid">
       <div class="card">
-        <h2>1 · The request that isn't one</h2>
+        <h2>1 · The objection wasn't actually late</h2>
         <p>
-          An officer drafts a <strong>refusal</strong> of an "extension request" — but the engine
-          computes the objection was lodged <strong>in time</strong>. There is nothing to extend:
-          deciding this request at all would be an error, whatever the merits. This is the
-          deterministic Level&nbsp;1–2 shell a Copilot must never get wrong — and with the engine,
-          it can't.
+          An officer is drafting a <strong>refusal</strong> of a request for extra time — but the tool
+          works out that the objection was lodged <strong>in time</strong>. There is nothing to
+          extend, so this request shouldn't be decided at all, no matter what its merits are. This is
+          the kind of firm legal check the tool is there to catch.
         </p>
         <button type="button" class="secondary" data-example="a">Load example 1</button>
       </div>
       <div class="card">
-        <h2>2 · Refusing an all-favourable profile</h2>
+        <h2>2 · Refusing when everything points the other way</h2>
         <p>
-          Three weeks late, the explanation covers the whole period, the case is arguable, no
-          concrete prejudice, no resting on rights — and the draft says <strong>refuse</strong>.
-          The engine doesn't overrule anyone; it raises a flag asking the decision maker to
-          articulate what outweighs a profile that decided cases treat as strongly favourable.
+          Three weeks late, the explanation covers the whole period, the objection is arguable, there's
+          no real prejudice to the Commissioner, and the taxpayer didn't just sit on their rights — yet
+          the draft says <strong>refuse</strong>. The tool doesn't overrule you; it flags that this
+          looks unusual and asks you to spell out, in your reasons, what outweighs a set of facts that
+          decided cases treat as strongly in the taxpayer's favour.
         </p>
         <button type="button" class="secondary" data-example="b">Load example 2</button>
       </div>
       <div class="card">
         <h2>3 · Granting the classic refusal pattern</h2>
         <p>
-          Two years late after resting on rights, with an explanation gap and no contributing ATO
-          conduct — and the draft says <strong>agree</strong>. The engine flags the recurring
-          refusal pattern and asks what displaces it. Switch the proposal to <em>refuse</em> and
-          re-check: the flag goes away — the weighing is the human's.
+          Two years late after sitting on their rights, with a gap in the explanation and nothing the
+          ATO did to cause the delay — yet the draft says <strong>agree</strong>. The tool flags that
+          this matches a pattern courts have usually refused, and asks what sets this case apart. Switch
+          the proposal to <em>refuse</em> and run it again: the flag disappears — the weighing is yours.
         </p>
         <button type="button" class="secondary" data-example="c">Load example 3</button>
       </div>
@@ -96,23 +104,33 @@
           <header class="eot-stage-head">
             <span class="eot-stage-num">1</span>
             <div class="eot-stage-title">
-              <h3>The deterministic shell</h3>
-              <span class="eot-stage-role">Engine decides</span>
+              <h3>The facts and legal checks</h3>
+              <span class="eot-stage-role">The tool works these out for you</span>
             </div>
           </header>
+          <p class="help">
+            Enter the basic facts about the decision and the objection. From these, the tool works out
+            whether the objection really was late and, if so, by how much, and whether the request for
+            extra time is even validly before you. You are not making any judgement here yet.
+          </p>
           <div class="inputs">
             <div class="field">
               <label for="decisionType">What decision was the late objection against?</label>
               <select id="decisionType"></select>
+              <p class="help">This sets the objection deadline that applies to the decision (for
+                example 60 days, 2 years or 4 years).</p>
             </div>
             <div class="field" id="f-noticeDate">
               <label for="noticeDate">Date on the notice of the decision</label>
               <input type="date" id="noticeDate">
-              <p class="help" id="noticeDate-help">The date the notice was given to the taxpayer.</p>
+              <p class="help" id="noticeDate-help">The date the notice was given to the taxpayer. The
+                objection deadline is counted from here.</p>
             </div>
             <div class="field">
               <label for="lodgmentDate">Date the objection was lodged</label>
               <input type="date" id="lodgmentDate">
+              <p class="help">When the objection was actually received. The tool compares this to the
+                deadline to see whether — and by how long — it was late.</p>
             </div>
             <div class="field" id="f-taxpayerKind" hidden>
               <label for="taxpayerKind">Kind of taxpayer</label>
@@ -147,22 +165,24 @@
               <input type="number" id="sicFraction" min="0" max="100" step="0.1" value="25">
             </div>
             <div class="field">
-              <label for="reqWriting">Was a WRITTEN extension request lodged with the objection? (s&nbsp;14ZW(2))</label>
+              <label for="reqWriting">Was the request for extra time made in writing? (s&nbsp;14ZW(2))</label>
               <select id="reqWriting">
                 <option value="true">Yes</option>
                 <option value="false">No</option>
               </select>
+              <p class="help">The law requires the request to be in writing. If there is no written
+                request, there is nothing validly before you to decide yet.</p>
             </div>
             <div class="field">
-              <label for="reqFully">Does it state the circumstances of the lateness FULLY AND IN DETAIL? (s&nbsp;14ZW(3))</label>
+              <label for="reqFully">Does the request explain the reasons for the delay fully and in detail? (s&nbsp;14ZW(3))</label>
               <select id="reqFully">
                 <option value="true">Yes</option>
                 <option value="false">No</option>
               </select>
               <p class="help">
-                If No, the request is still validly before the Commissioner — the engine raises the
-                PS&nbsp;LA&nbsp;2003/7 [6] prompt to invite further information instead (it can never be
-                the sole ground of refusal).
+                If it doesn't, you still can't refuse on that basis alone. The tool prompts you to ask
+                the taxpayer for more information first (PS&nbsp;LA&nbsp;2003/7 [6]) rather than treating
+                the thin explanation as a reason to say no.
               </p>
             </div>
           </div>
@@ -172,36 +192,47 @@
           <header class="eot-stage-head">
             <span class="eot-stage-num">2</span>
             <div class="eot-stage-title">
-              <h3>The factor record</h3>
-              <span class="eot-stage-role">Human findings — engine records and cites</span>
+              <h3>Your findings on the circumstances</h3>
+              <span class="eot-stage-role">Your judgement — the tool only records it</span>
             </div>
           </header>
           <p class="help">
-            These are the decision maker's findings under PS LA 2003/7 — the engine records and
-            cites them; it never infers them.
+            These are the things PS&nbsp;LA&nbsp;2003/7 asks you to weigh up when deciding whether to
+            grant extra time. Make each finding yourself, from the material in front of you — the tool
+            simply records what you decide and notes where each factor comes from. It does not work
+            these out for you.
           </p>
           <div class="inputs">
             <div class="field">
-              <label for="fExplains">Does the explanation genuinely account for the WHOLE period of delay?</label>
+              <label for="fExplains">Does the explanation account for the whole period of the delay?</label>
               <select id="fExplains"><option value="true">Yes</option><option value="false" selected>No</option></select>
+              <p class="help">Consider whether the reasons cover the entire time the taxpayer was late,
+                not just part of it. A gap in the explanation counts against them.</p>
             </div>
             <div class="field">
-              <label for="fArguable">Is the objection arguable (not frivolous, not bound to fail in law)?</label>
+              <label for="fArguable">Is the objection arguable?</label>
               <select id="fArguable"><option value="true">Yes</option><option value="false" selected>No</option></select>
-              <p class="help">A low bar — no full merits investigation.</p>
+              <p class="help">You are not deciding whether the objection would succeed — only whether it
+                has some genuine basis and isn't hopeless. This is a low bar; no full merits
+                investigation.</p>
             </div>
             <div class="field">
-              <label for="fPrejudice">Is concrete prejudice to the Commissioner identified?</label>
+              <label for="fPrejudice">Would granting extra time actually prejudice the Commissioner?</label>
               <select id="fPrejudice"><option value="true">Yes</option><option value="false" selected>No</option></select>
-              <p class="help">Administrative inconvenience is not prejudice.</p>
+              <p class="help">Consider whether the delay itself has caused a real disadvantage — for
+                example lost records or faded memories. Extra work or inconvenience is not prejudice.</p>
             </div>
             <div class="field">
-              <label for="fAtoConduct">Did ATO conduct (action or inaction) contribute to the delay?</label>
+              <label for="fAtoConduct">Did anything the ATO did or failed to do contribute to the delay?</label>
               <select id="fAtoConduct"><option value="true">Yes</option><option value="false" selected>No</option></select>
+              <p class="help">Consider whether ATO action or inaction — for example a delayed or unclear
+                response — played a part in the taxpayer being late.</p>
             </div>
             <div class="field">
-              <label for="fRested">Did the taxpayer rest on their rights while time ran?</label>
+              <label for="fRested">Did the taxpayer simply sit on their rights while time ran?</label>
               <select id="fRested"><option value="true">Yes</option><option value="false" selected>No</option></select>
+              <p class="help">Consider whether the taxpayer knew about the decision and let the time pass
+                without acting, rather than actively pursuing the matter.</p>
             </div>
           </div>
         </section>
@@ -210,16 +241,21 @@
           <header class="eot-stage-head">
             <span class="eot-stage-num">3</span>
             <div class="eot-stage-title">
-              <h3>The proposed decision</h3>
-              <span class="eot-stage-role">Sense-checked, never made, by the engine</span>
+              <h3>The decision you're leaning towards</h3>
+              <span class="eot-stage-role">Sense-checked by the tool, but always yours to make</span>
             </div>
           </header>
+          <p class="help">
+            Enter the decision you're minded to make. The tool checks it against the firm legal rules
+            and against patterns in decided cases, and flags anything that looks unusual so you can make
+            sure your written reasons address it. It never tells you what to decide.
+          </p>
           <div class="inputs">
             <div class="field">
-              <label for="proposedOutcome">Proposed s&nbsp;14ZX outcome</label>
+              <label for="proposedOutcome">The decision you're leaning towards</label>
               <select id="proposedOutcome">
-                <option value="undecided">Undecided — no sense check yet</option>
-                <option value="agree">Agree — treat the objection as lodged in time</option>
+                <option value="undecided">Not decided yet — just record the facts and findings</option>
+                <option value="agree">Grant extra time — treat the objection as lodged in time</option>
                 <option value="refuse">Refuse the request</option>
               </select>
             </div>
@@ -234,13 +270,14 @@
     <div id="error-box"></div>
 
     <section id="results" hidden>
-      <h2 class="eot-stage-h2 eot-stage-1"><span class="eot-stage-num">1</span> The deterministic shell — result</h2>
+      <h2 class="eot-stage-h2 eot-stage-1"><span class="eot-stage-num">1</span> What the tool worked out</h2>
       <div class="results-grid" id="stat-cards"></div>
 
-      <h2 class="eot-stage-h2 eot-stage-2"><span class="eot-stage-num">2</span> The factor record — what a Copilot cites</h2>
+      <h2 class="eot-stage-h2 eot-stage-2"><span class="eot-stage-num">2</span> Your findings on the record</h2>
       <p class="muted">
-        The structured record the engine hands to any AI assistant: each finding, with the
-        governed citation behind it — instead of the assistant's "general legal knowledge".
+        A tidy record of the findings you made, with a reference behind each one showing where the
+        factor comes from — ready to drop into your reasons, and something an AI assistant can cite
+        from instead of relying on its own "general legal knowledge".
       </p>
       <div class="table-scroll">
         <table id="factor-table">
@@ -249,21 +286,23 @@
         </table>
       </div>
 
-      <h2 class="eot-stage-h2 eot-stage-3"><span class="eot-stage-num">3</span> The proposed decision — sense check</h2>
+      <h2 class="eot-stage-h2 eot-stage-3"><span class="eot-stage-num">3</span> Sense check on your decision</h2>
       <div id="flag-box"></div>
 
       <div class="card">
         <p>
-          There is <strong>no variable</strong> in the engine for whether the request should be
-          granted or refused. The s&nbsp;14ZX discretion is evaluative and balancing — no scoring,
-          no matrices, no decision tree, no factor determinative. The engine's flags mark a
-          proposal as <em>jurisdictionally unavailable</em> or <em>atypical against decided-case
-          patterns</em>; they never decide. If a flag fires on a decision you stand behind, the
-          answer is better articulation in the reasons — not a different decision.
+          The tool has <strong>no answer of its own</strong> for whether to grant or refuse — that
+          decision is yours, and it stays out of it entirely. Deciding a s&nbsp;14ZX request means
+          weighing everything together; there is no score, no checklist total and no single factor that
+          settles it. All the tool's flags do is point out when a proposal either isn't legally
+          available or looks unusual next to decided cases. If a flag comes up on a decision you're
+          confident in, the answer is to explain it more clearly in your reasons — not to change your
+          decision.
         </p>
         <p class="muted">
-          This boundary is rule 1.4.1 of the ruleset, and it is what keeps the discretion lawful:
-          a mechanical rule that dictated the outcome would fetter it.
+          Keeping the decision with the officer is deliberate (rule&nbsp;1.4.1 of the ruleset): a rule
+          that dictated the outcome would be unlawful, because it would remove the very judgement the
+          law requires a person to exercise.
         </p>
       </div>
 

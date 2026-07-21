@@ -101,6 +101,8 @@ h1 { font-size: 1.85rem; font-weight: 700; letter-spacing: -0.015em; margin: 0.5
 h2 { font-size: 1.3rem; font-weight: 600; margin-top: 2.25rem; }
 h3 { font-size: 1.05rem; font-weight: 600; }
 p.lede { color: var(--muted); max-width: 46rem; margin-top: 0.25rem; font-size: 1.02rem; }
+ul.lede-list { color: var(--muted); max-width: 46rem; margin: 0.5rem 0 0.25rem; padding-left: 1.2rem; font-size: 1.02rem; }
+ul.lede-list li { margin-bottom: 0.4rem; }
 
 a { color: var(--accent); }
 a:hover { color: var(--accent-dark); }
